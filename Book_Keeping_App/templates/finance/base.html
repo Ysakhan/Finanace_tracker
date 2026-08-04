@@ -1,0 +1,151 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Finance Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Notification Banner -->
+    {% if notification %}
+    <div class="notification-banner notification-{{ notification.type }}" id="notificationBanner">
+        <div class="notification-content">
+            <span class="notification-icon">
+                {% if notification.type == 'success' %}&#10004;{% elif notification.type == 'warning' %}&#9888;{% else %}&#8505;{% endif %}
+            </span>
+            <div>
+                <strong>{{ notification.title }}</strong>
+                <p>{{ notification.message }}</p>
+            </div>
+        </div>
+        <button class="notification-close" onclick="dismissNotification()">&times;</button>
+    </div>
+    {% endif %}
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="notification-banner notification-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" style="animation-delay: {{ forloop.counter0 }}00ms;">
+        <div class="notification-content">
+            <span class="notification-icon">
+                {% if message.tags == 'success' %}&#10004;{% elif message.tags == 'warning' %}&#9888;{% elif message.tags == 'error' %}&#10008;{% else %}&#8505;{% endif %}
+            </span>
+            <div><p>{{ message }}</p></div>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'finance:dashboard' %}" class="nav-brand">
+                <span class="brand-icon">&#128176;</span>
+                <span class="brand-text">Finance Tracker</span>
+            </a>
+            <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="navLinks">
+                <a href="{% url 'finance:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <span class="nav-icon">&#127968;</span> Dashboard
+                </a>
+                <a href="{% url 'finance:emi_list' %}" class="nav-link {% if 'emi' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">&#128200;</span> EMIs
+                </a>
+                <a href="{% url 'finance:debts_credits' %}" class="nav-link {% if 'debt' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">&#129309;</span> Debts
+                </a>
+                <a href="{% url 'finance:beneficiary_list' %}" class="nav-link {% if 'beneficiary' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">👥</span> Beneficiaries
+                </a>
+                <a href="{% url 'finance:transaction_list' %}" class="nav-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">&#128203;</span> History
+                </a>
+                <a href="{% url 'finance:assistant' %}" class="nav-link {% if 'assistant' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">&#129302;</span> Assistant
+                </a>
+                <a href="{% url 'finance:export_page' %}" class="nav-link {% if 'export' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">&#128196;</span> Export
+                </a>
+                {% if user.is_authenticated %}
+                <span class="nav-link nav-user">&#128100; {{ user.username }}</span>
+                <a href="{% url 'finance:logout' %}" class="nav-link nav-logout">Logout</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Floating Add Button -->
+    <button class="fab" onclick="document.getElementById('addModal').classList.add('active')" title="Quick Add">
+        <span>+</span>
+    </button>
+
+    <!-- Add Modal -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Quick Add</h3>
+                <button class="modal-close" onclick="document.getElementById('addModal').classList.remove('active')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <a href="{% url 'finance:emi_add' %}" class="modal-option">
+                    <span class="modal-option-icon">&#128200;</span>
+                    <div>
+                        <strong>New EMI</strong>
+                        <small>Add a monthly EMI payment</small>
+                    </div>
+                </a>
+                <a href="{% url 'finance:beneficiary_add' %}" class="modal-option">
+                    <span class="modal-option-icon">👤</span>
+                    <div>
+                        <strong>New Beneficiary</strong>
+                        <small>Add contact person for debts & credits</small>
+                    </div>
+                </a>
+                <a href="{% url 'finance:debt_add' %}" class="modal-option">
+                    <span class="modal-option-icon">&#129309;</span>
+                    <div>
+                        <strong>New Debt/Credit</strong>
+                        <small>Track money owed or owing</small>
+                    </div>
+                </a>
+                <a href="{% url 'finance:transaction_add' %}" class="modal-option">
+                    <span class="modal-option-icon">&#128179;</span>
+                    <div>
+                        <strong>New Transaction</strong>
+                        <small>Log a financial transaction</small>
+                    </div>
+                </a>
+                <a href="{% url 'finance:balance_update' %}" class="modal-option">
+                    <span class="modal-option-icon">&#128176;</span>
+                    <div>
+                        <strong>Update Balance</strong>
+                        <small>Update bank/cash/credit card balance</small>
+                    </div>
+                </a>
+                <a href="{% url 'finance:transfer_funds' %}" class="modal-option">
+                    <span class="modal-option-icon">🔄</span>
+                    <div>
+                        <strong>Transfer Money</strong>
+                        <small>Transfer funds between cash, bank & card</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

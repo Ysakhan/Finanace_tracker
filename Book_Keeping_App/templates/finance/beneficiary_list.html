@@ -1,0 +1,131 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Beneficiaries Directory - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+        <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px;">
+            <span>👥</span> Beneficiaries Directory
+        </h1>
+        <p class="text-muted" style="font-size: 0.95rem; margin-top: 4px;">
+            Manage contacts for debt and credit transactions. All shared EMIs and debts are linked to these beneficiaries.
+        </p>
+    </div>
+    <div class="page-actions" style="display: flex; align-items: center; gap: 10px;">
+        <a href="{% url 'finance:beneficiary_add' %}" class="btn btn-primary" style="padding: 10px 18px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <span>+</span> Add Beneficiary
+        </a>
+    </div>
+</div>
+
+<!-- Search & Counter Bar -->
+<div class="card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 10px; width: 100%; max-width: 380px;">
+        <span style="font-size: 1.1rem; color: var(--text-muted);">🔍</span>
+        <input type="text" id="beneficiary-search" class="form-input" placeholder="Search beneficiary name, phone, or UPI..." onkeyup="filterBeneficiaries()" style="padding: 8px 14px; font-size: 0.95rem; width: 100%;">
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.9rem; padding: 6px 12px; border: 1px solid rgba(56, 189, 248, 0.3);">
+            Total Contacts: <strong id="ben-count">{{ beneficiaries|length }}</strong>
+        </span>
+    </div>
+</div>
+
+<!-- Beneficiaries Grid -->
+<div class="beneficiary-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;" id="beneficiary-cards-container">
+    {% for b in beneficiaries %}
+    <div class="card ben-card" data-name="{{ b.name|lower }}" data-phone="{{ b.phone_number|lower }}" data-upi="{{ b.upi_id|lower }}" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.4rem; transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; overflow: hidden;">
+        <!-- Top color accent stripe -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);"></div>
+
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <!-- Avatar initial circle -->
+            <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(192, 132, 252, 0.2)); border: 2px solid rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; color: #38bdf8; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                {{ b.name|slice:":1"|upper }}
+            </div>
+            
+            <div style="overflow: hidden; flex: 1;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; word-break: break-word; letter-spacing: 0.2px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
+                    {{ b.name }}
+                </h3>
+                <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Linked Beneficiary</span>
+            </div>
+        </div>
+
+        <!-- Phone & UPI Details -->
+        <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); padding: 0.85rem 1rem; border-radius: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;">
+                <span style="color: #cbd5e1; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                    <span>📞</span> Phone
+                </span>
+                {% if b.phone_number %}
+                <span style="font-weight: 600; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 2px 8px; border-radius: 6px;">
+                    {{ b.phone_number }}
+                </span>
+                {% else %}
+                <span style="color: #64748b;">Not set</span>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;">
+                <span style="color: #cbd5e1; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                    <span>💳</span> UPI / Bank
+                </span>
+                {% if b.upi_id %}
+                <span style="font-weight: 600; color: #34d399; background: rgba(52, 211, 153, 0.12); padding: 2px 8px; border-radius: 6px; word-break: break-all;">
+                    {{ b.upi_id }}
+                </span>
+                {% else %}
+                <span style="color: #64748b;">Not set</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="{% url 'finance:debt_add' %}?beneficiary_id={{ b.pk }}" class="btn btn-sm btn-success" style="flex: 1.5; text-align: center; font-weight: 600; padding: 7px 10px; font-size: 0.85rem;">
+                + Debt / Credit
+            </a>
+            <a href="{% url 'finance:beneficiary_edit' b.pk %}" class="btn btn-sm btn-outline" style="flex: 1; text-align: center; font-weight: 500; padding: 7px 10px; font-size: 0.85rem;">
+                Edit
+            </a>
+            <a href="{% url 'finance:beneficiary_delete' b.pk %}" class="btn btn-sm btn-danger" style="flex: 1; text-align: center; font-weight: 500; padding: 7px 10px; font-size: 0.85rem;">
+                Delete
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: 14px;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">👥</div>
+        <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem;">No Beneficiaries Found</h3>
+        <p class="text-muted" style="margin-bottom: 1.25rem;">Create your first contact to track shared debts, credits, and EMIs.</p>
+        <a href="{% url 'finance:beneficiary_add' %}" class="btn btn-primary">+ Add Beneficiary</a>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function filterBeneficiaries() {
+    const query = document.getElementById('beneficiary-search').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.ben-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const phone = card.getAttribute('data-phone') || '';
+        const upi = card.getAttribute('data-upi') || '';
+
+        if (name.includes(query) || phone.includes(query) || upi.includes(query)) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    const countElem = document.getElementById('ben-count');
+    if (countElem) countElem.innerText = visibleCount;
+}
+</script>
+{% endblock %}

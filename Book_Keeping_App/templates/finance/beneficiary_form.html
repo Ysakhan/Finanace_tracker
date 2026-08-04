@@ -1,0 +1,51 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}{{ action }} Beneficiary - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 style="font-size: 1.7rem; color: var(--text-primary);">👤 {{ action }} Beneficiary</h1>
+    <p class="text-muted">Enter contact details for tracking split payments and debts.</p>
+</div>
+
+<div class="card max-w-xl" style="margin: 0 auto; padding: 2rem; background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border-color);">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label for="{{ form.name.id_for_label }}" style="display: block; font-weight: 600; color: #f8fafc; margin-bottom: 6px; font-size: 0.95rem;">
+                Full Name <span style="color: #f87171;">*</span>
+            </label>
+            {{ form.name }}
+            {% for error in form.name.errors %}
+            <span class="form-error" style="color: #f87171; font-size: 0.85rem; margin-top: 4px; display: block;">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label for="{{ form.phone_number.id_for_label }}" style="display: block; font-weight: 600; color: #f8fafc; margin-bottom: 6px; font-size: 0.95rem;">
+                Phone Number (Optional)
+            </label>
+            {{ form.phone_number }}
+            {% for error in form.phone_number.errors %}
+            <span class="form-error" style="color: #f87171; font-size: 0.85rem; margin-top: 4px; display: block;">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="{{ form.upi_id.id_for_label }}" style="display: block; font-weight: 600; color: #f8fafc; margin-bottom: 6px; font-size: 0.95rem;">
+                UPI ID / Bank Details (Optional)
+            </label>
+            {{ form.upi_id }}
+            {% for error in form.upi_id.errors %}
+            <span class="form-error" style="color: #f87171; font-size: 0.85rem; margin-top: 4px; display: block;">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 1.75rem;">
+            <a href="{% url 'finance:beneficiary_list' %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancel</a>
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Save Beneficiary</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

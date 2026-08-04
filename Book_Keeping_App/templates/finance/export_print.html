@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Financial Report - {{ user.username }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+        }
+        .header {
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #1e293b;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .print-btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .print-btn:hover {
+            background: #1d4ed8;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+            padding-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-paid, .badge-settled { background: #dcfce7; color: #166534; }
+        .badge-unpaid, .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-overdue { background: #fee2e2; color: #991b1b; }
+        .summary-box {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1>Complete Financial Status Report</h1>
+            <p>Generated on {{ today|date:"d F Y" }} for user <strong>{{ user.username }}</strong></p>
+        </div>
+        <button class="print-btn no-print" onclick="window.print()">Print Report</button>
+    </div>
+
+    <!-- Account Balance -->
+    <div class="section-title">1. Account Balance</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Account Type</th>
+                <th class="text-right">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Bank Balance</td>
+                <td class="text-right">₹{{ balance.bank_balance }}</td>
+            </tr>
+            <tr>
+                <td>Cash in Hand</td>
+                <td class="text-right">₹{{ balance.cash_in_hand }}</td>
+            </tr>
+            <tr>
+                <td>Credit Card Balance</td>
+                <td class="text-right">₹{{ balance.credit_card_balance }}</td>
+            </tr>
+            <tr style="font-weight: bold; background: #e2e8f0;">
+                <td>Effective Liquidity (Bank - Current Month Personal EMIs)</td>
+                <td class="text-right">₹{{ liquidity }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- All Monthly EMIs -->
+    <div class="section-title">2. All Monthly EMIs & Loans (Across All Months - Full Tenure Details)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Due</th>
+                <th class="text-right">Full EMI</th>
+                <th class="text-right">Personal Share</th>
+                <th class="text-right">Total Loan</th>
+                <th class="text-center">Tenure</th>
+                <th class="text-center">Paid</th>
+                <th class="text-center">Rem Tenure</th>
+                <th class="text-right">Rem Loan Bal</th>
+                <th class="text-right">Progress</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emi in all_emis %}
+            <tr>
+                <td><strong>{{ emi.month_year }}</strong></td>
+                <td>
+                    <strong>{{ emi.title }}</strong>
+                    {% if emi.split_with %}
+                        <div style="font-size: 11px; color: #64748b;">Split with: {{ emi.split_with }} (Shared: ₹{{ emi.split_amount }})</div>
+                    {% endif %}
+                    {% if emi.notes %}
+                        <div style="font-size: 11px; color: #64748b; font-style: italic;">Notes: {{ emi.notes }}</div>
+                    {% endif %}
+                </td>
+                <td>{{ emi.get_category_display }}</td>
+                <td>Day {{ emi.due_day }}</td>
+                <td class="text-right">₹{{ emi.full_amount }}</td>
+                <td class="text-right">₹{{ emi.personal_share }}</td>
+                <td class="text-right">
+                    {% if emi.total_loan_amount != None %}
+                        ₹{{ emi.total_loan_amount }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if emi.total_emis != None %}
+                        {{ emi.total_emis }} m
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-center">{{ emi.paid_emis }}</td>
+                <td class="text-center">
+                    {% if emi.remaining_emis != None %}
+                        <strong>{{ emi.remaining_emis }} m</strong>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    {% if emi.remaining_balance != None %}
+                        <strong>₹{{ emi.remaining_balance }}</strong>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    {% if emi.total_emis and emi.total_emis > 0 %}
+                        {{ emi.progress_percentage }}%
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge badge-{{ emi.status }}">{{ emi.status }}</span>
+                    {% if emi.paid_date %}
+                        <div style="font-size: 10px; color: #64748b;">{{ emi.paid_date|date:"d M Y" }}</div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="13" style="text-align: center; color: #64748b;">No EMI or Loan entries recorded.</td>
+            </tr>
+            {% endfor %}
+            {% if all_emis %}
+            <tr style="font-weight: bold; background: #e2e8f0;">
+                <td colspan="4">TOTAL (All Months)</td>
+                <td class="text-right">₹{{ total_emi_full }}</td>
+                <td class="text-right">₹{{ total_emi_personal }}</td>
+                <td colspan="7"></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+
+    <!-- All Debts -->
+    <div class="section-title">3. All Debts (Money You Owe)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Person Name</th>
+                <th class="text-right">Original Amount</th>
+                <th class="text-right">Amount Paid</th>
+                <th class="text-right">Remaining Balance</th>
+                <th>Status</th>
+                <th>Reason / Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in all_debts %}
+            <tr>
+                <td><strong>{{ d.person_name }}</strong></td>
+                <td class="text-right">₹{{ d.original_amount }}</td>
+                <td class="text-right">₹{{ d.amount_paid }}</td>
+                <td class="text-right">₹{{ d.remaining }}</td>
+                <td><span class="badge badge-{{ d.status }}">{{ d.status }}</span></td>
+                <td>{{ d.reason|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #64748b;">No debt records found.</td>
+            </tr>
+            {% endfor %}
+            {% if all_debts %}
+            <tr style="font-weight: bold; background: #e2e8f0;">
+                <td colspan="3">Total Outstanding Debt Remaining</td>
+                <td class="text-right">₹{{ total_debt_rem }}</td>
+                <td colspan="2"></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- All Credits -->
+    <div class="section-title">4. All Credits (Money Owed to You)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Person Name</th>
+                <th class="text-right">Original Amount</th>
+                <th class="text-right">Amount Paid</th>
+                <th class="text-right">Remaining Balance</th>
+                <th>Status</th>
+                <th>Reason / Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in all_credits %}
+            <tr>
+                <td><strong>{{ c.person_name }}</strong></td>
+                <td class="text-right">₹{{ c.original_amount }}</td>
+                <td class="text-right">₹{{ c.amount_paid }}</td>
+                <td class="text-right">₹{{ c.remaining }}</td>
+                <td><span class="badge badge-{{ c.status }}">{{ c.status }}</span></td>
+                <td>{{ c.reason|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #64748b;">No credit records found.</td>
+            </tr>
+            {% endfor %}
+            {% if all_credits %}
+            <tr style="font-weight: bold; background: #e2e8f0;">
+                <td colspan="3">Total Outstanding Credit Remaining</td>
+                <td class="text-right">₹{{ total_credit_rem }}</td>
+                <td colspan="2"></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Transaction History -->
+    <div class="section-title">5. Transaction History</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for txn in all_txns %}
+            <tr>
+                <td>{{ txn.date|date:"Y-m-d" }}</td>
+                <td>{{ txn.title }}</td>
+                <td>{{ txn.get_category_display }}</td>
+                <td class="text-right">₹{{ txn.amount }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: #64748b;">No transactions logged.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Net Position Summary -->
+    <div class="summary-box">
+        <span>Overall Net Outstanding Position (Credits - Debts):</span>
+        <span>{% if net_position >= 0 %}+{% endif %}₹{{ net_position }}</span>
+    </div>
+
+    <script>
+        // Trigger print dialog on load
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+    </script>
+
+</body>
+</html>
