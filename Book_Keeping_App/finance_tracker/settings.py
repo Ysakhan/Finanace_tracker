@@ -15,7 +15,11 @@ SECRET_KEY = 'django-insecure-$*dfbk!wg^*fe6wpp_!o*6g6l2k=0dp9e@_rq_hvk60gh%y=#1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', '0.0.0.0']
+ALLOWED_HOSTS = ["*"]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://finanacetrackerapp.pythonanywhere.com',
+]
 
 # Application definition
 INSTALLED_APPS = [
