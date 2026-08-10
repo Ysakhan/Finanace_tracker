@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Sum, Q
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 import json
 import io
@@ -44,6 +44,142 @@ def logout_view(request):
     return redirect('finance:login')
 
 
+def compute_financial_health_insights(user):
+    today = date.today()
+    current_month = today.strftime('%Y-%m')
+    balance = AccountBalance.get_instance(user)
+
+    # 1. Date ranges for week-over-week comparison
+    this_week_start = today - timedelta(days=7)
+    last_week_start = today - timedelta(days=14)
+
+    txns_this_week = TransactionHistory.objects.filter(user=user, date__gte=this_week_start, date__lte=today).exclude(category__in=['income', 'credit_received'])
+    txns_last_week = TransactionHistory.objects.filter(user=user, date__gte=last_week_start, date__lt=this_week_start).exclude(category__in=['income', 'credit_received'])
+
+    this_week_total = sum(abs(t.amount) for t in txns_this_week) or Decimal('0')
+    last_week_total = sum(abs(t.amount) for t in txns_last_week) or Decimal('0')
+
+    pct_change = 0.0
+    if last_week_total > 0:
+        pct_change = float((this_week_total - last_week_total) / last_week_total * 100)
+
+    # Category breakdown comparison for this week
+    cats_this_week = txns_this_week.values('category').annotate(cat_total=Sum('amount')).order_by('-cat_total')
+    top_cat_name = None
+    top_cat_amount = Decimal('0')
+    if cats_this_week.exists():
+        top_cat_name = cats_this_week[0]['category']
+        top_cat_amount = abs(cats_this_week[0]['cat_total'])
+
+    # 2. EMIs & Debts health
+    current_emis = MonthlyEMI.objects.filter(user=user, month_year=current_month)
+    cur_personal_emi = current_emis.aggregate(t=Sum('personal_share'))['t'] or Decimal('0')
+    overdue_count = current_emis.filter(status='overdue').count()
+
+    active_debts = SplitDebt.objects.filter(user=user, debt_type='debt').exclude(status='settled')
+    total_debt_rem = sum(d.remaining for d in active_debts)
+
+    active_credits = SplitDebt.objects.filter(user=user, debt_type='credit').exclude(status='settled')
+    total_credit_rem = sum(c.remaining for c in active_credits)
+
+    liquidity = balance.bank_balance - cur_personal_emi
+
+    # 3. Calculate Health Score (0-100)
+    score = 0
+
+    # Liquidity score (max 30 pts)
+    if liquidity > Decimal('10000'):
+        score += 30
+    elif liquidity > Decimal('0'):
+        score += 20
+    elif liquidity == Decimal('0'):
+        score += 10
+
+    # EMI timeliness (max 30 pts)
+    if overdue_count == 0:
+        score += 30
+    else:
+        score += max(0, 30 - (overdue_count * 10))
+
+    # Debt ratio (max 20 pts)
+    bank_bal = balance.bank_balance if balance.bank_balance > 0 else Decimal('1')
+    debt_ratio = (Decimal(str(total_debt_rem)) / bank_bal) if bank_bal > 0 else Decimal('1')
+    if debt_ratio < Decimal('0.25'):
+        score += 20
+    elif debt_ratio < Decimal('0.50'):
+        score += 12
+    elif debt_ratio < Decimal('1.0'):
+        score += 5
+
+    # Expense trend (max 20 pts)
+    if pct_change <= 0:
+        score += 20
+    elif pct_change <= 15:
+        score += 12
+    else:
+        score += 5
+
+    score = min(100, max(0, score))
+
+    # Rating & Badges
+    if score >= 85:
+        rating = "Excellent"
+        rating_color = "success"
+    elif score >= 70:
+        rating = "Good"
+        rating_color = "success"
+    elif score >= 50:
+        rating = "Fair"
+        rating_color = "warning"
+    else:
+        rating = "Needs Attention"
+        rating_color = "danger"
+
+    # Insights list
+    insights = []
+    if pct_change < 0:
+        insights.append(f"Spending Pace: You spent {abs(pct_change):.1f}% LESS this week compared to last week (₹{this_week_total:,.2f} vs ₹{last_week_total:,.2f}). Excellent control!")
+    elif pct_change > 0:
+        insights.append(f"Spending Pace: Expenses increased by {pct_change:.1f}% this week (₹{this_week_total:,.2f} vs ₹{last_week_total:,.2f}).")
+    else:
+        insights.append(f"Spending Pace: Weekly spending is steady at ₹{this_week_total:,.2f}.")
+
+    if top_cat_name:
+        cat_pct = float(top_cat_amount / this_week_total * 100) if this_week_total > 0 else 0
+        insights.append(f"Top Category: '{top_cat_name.title()}' was your highest expense this week (₹{top_cat_amount:,.2f}, {cat_pct:.0f}% of weekly spend).")
+
+    if liquidity > Decimal('10000'):
+        insights.append(f"Liquidity Buffer: Healthy ₹{liquidity:,.2f} buffer remaining after all monthly EMIs.")
+    elif liquidity >= Decimal('0'):
+        insights.append(f"Liquidity Buffer: Low buffer of ₹{liquidity:,.2f}. Keep non-essential spending minimal.")
+    else:
+        insights.append(f"Liquidity Alert: Negative liquidity buffer (₹{liquidity:,.2f})! Outstanding EMIs exceed current bank balance.")
+
+    if overdue_count > 0:
+        insights.append(f"Overdue Alert: You have {overdue_count} overdue EMI(s). Pay them promptly to avoid penalty fees.")
+    else:
+        insights.append("EMI Track Record: 100% on-time payment record this month!")
+
+    if total_credit_rem > Decimal('0'):
+        insights.append(f"Receivables: You have ₹{total_credit_rem:,.2f} in active credits to collect from beneficiaries.")
+
+    return {
+        'score': score,
+        'rating': rating,
+        'rating_color': rating_color,
+        'insights': insights,
+        'this_week_total': this_week_total,
+        'last_week_total': last_week_total,
+        'pct_change': pct_change,
+        'top_cat_name': top_cat_name,
+        'top_cat_amount': top_cat_amount,
+        'liquidity': liquidity,
+        'overdue_count': overdue_count,
+        'total_debt_rem': total_debt_rem,
+        'total_credit_rem': total_credit_rem,
+    }
+
+
 # DASHBOARD
 
 @login_required
@@ -68,6 +204,8 @@ def dashboard(request):
     upcoming = emis.filter(status='unpaid', due_day__gte=today.day, due_day__lte=today.day + 3)
     overdue_reminders = emis.filter(status='overdue')
 
+    health_insights = compute_financial_health_insights(request.user)
+
     context = {
         'balance': balance,
         'emis': emis,
@@ -85,6 +223,7 @@ def dashboard(request):
         'debts': debts,
         'credits': credits,
         'current_month': current_month,
+        'health': health_insights,
     }
     return render(request, 'finance/dashboard.html', context)
 
@@ -1200,11 +1339,23 @@ def assistant_api(request):
     has_summary_keyword = any(w in user_msg for w in ['summary', 'overview', 'report', 'all details', 'details', 'everything', 'status'])
     has_afford_keyword = any(w in user_msg for w in ['afford', 'buy', 'purchase', 'spend'])
     has_priority_keyword = any(w in user_msg for w in ['pay first', 'priority', 'suggest', 'advice', 'recommend'])
+    has_health_keyword = any(w in user_msg for w in ['health', 'insight', 'insights', 'analysis', 'how am i doing', 'score', 'pace', 'health check'])
 
     resp = ""
 
+    # 0. Financial Health Check & Insights
+    if has_health_keyword:
+        h = compute_financial_health_insights(request.user)
+        resp = f"FINANCIAL HEALTH CHECK & INSIGHTS\n{'='*45}\n\n"
+        resp += f"Health Score: {h['score']}/100 ({h['rating']})\n"
+        resp += f"Liquidity Buffer: Rs.{h['liquidity']:,.2f}\n"
+        resp += f"This Week Spending: Rs.{h['this_week_total']:,.2f}\n\n"
+        resp += "SMART INSIGHTS:\n"
+        for item in h['insights']:
+            resp += f"• {item}\n"
+
     # 1. Combined request (e.g., "all details of emi and loans and debts credits" or summary)
-    if (has_emi_keyword and (has_debt_keyword or has_credit_keyword)) or (has_summary_keyword and not is_this_month):
+    elif (has_emi_keyword and (has_debt_keyword or has_credit_keyword)) or (has_summary_keyword and not is_this_month):
         if is_this_month and not is_all_explicit:
             resp = f"FINANCIAL SUMMARY — {current_month} (This Month Only)\n{'='*45}\n\n"
             resp += f"BANK BALANCE: Rs.{balance.bank_balance}\nEFFECTIVE LIQUIDITY: Rs.{liquidity}\n\n"

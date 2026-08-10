@@ -22,6 +22,7 @@
             <div class="chat-bubble">
                 Hello! I'm your Finance Companion. I can help you with:
                 <br><br>
+                - <strong>"Financial health check"</strong> — Automated weekly spending insights & health score<br>
                 - <strong>"All details of EMI and loans"</strong> — Full EMI & loan history across all months<br>
                 - <strong>"This month EMI"</strong> — See EMIs for current month only<br>
                 - <strong>"All debts and credits"</strong> — View all debts & credits (active & settled)<br>
@@ -31,6 +32,12 @@
                 - <strong>"Full financial summary"</strong> — Complete financial overview across all months
             </div>
         </div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; padding: 0 0.5rem;">
+        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('Financial health check')">Financial Health Check</button>
+        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('This month EMI')">This Month EMIs</button>
+        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('What\'s my balance?')">My Balance</button>
+        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('Full financial summary')">Full Summary</button>
     </div>
     <div class="chat-input-area">
         <form id="chatForm" class="chat-form">
@@ -93,6 +100,11 @@ function addMessage(text, type) {
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return div;
+}
+
+function sendPrompt(text) {
+    chatInput.value = text;
+    chatForm.dispatchEvent(new Event('submit'));
 }
 
 function getCookie(name) {

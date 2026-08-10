@@ -1,5 +1,5 @@
 """Quick end-to-end test of all pages and POST operations."""
-import os, sys, django
+import os, sys, django, json
 os.environ['DJANGO_SETTINGS_MODULE'] = 'finance_tracker.settings'
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 django.setup()
@@ -115,6 +115,11 @@ print("  [OK] PDF Export returns status 200")
 res_print = client.get('/export/print/')
 assert b'Rem Tenure' in res_print.content, "Print export missing Rem Tenure!"
 print("  [OK] Print Export contains Rem Tenure header")
+
+print("\n=== VERIFYING FINANCIAL HEALTH ASSISTANT API ===")
+res_health = client.post('/assistant/api/', data=json.dumps({'message': 'financial health check'}), content_type='application/json')
+assert res_health.status_code == 200 and 'Health Score' in res_health.json().get('response', ''), "Assistant Health Check API failed!"
+print("  [OK] Assistant Health Check API returns 200 and Health Score")
 
 print()
 if all_ok:
