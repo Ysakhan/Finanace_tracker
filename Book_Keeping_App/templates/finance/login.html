@@ -1,0 +1,35 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Login - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="auth-icon">&#128176;</span>
+            <h2>Welcome Back</h2>
+            <p class="text-muted">Sign in to your Finance Tracker</p>
+        </div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <p>Invalid username or password. Please try again.</p>
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" name="username" id="id_username" class="form-input" placeholder="Enter your username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                <input type="password" name="password" id="id_password" class="form-input" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{% url 'finance:register' %}">Register here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
