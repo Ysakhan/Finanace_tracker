@@ -1,0 +1,35 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}{{ error_title|default:"Page Not Set" }} - Finance Tracker{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 65vh; padding: 2rem 1rem;">
+    <div style="max-width: 550px; width: 100%; text-align: center; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 3rem 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4);">
+        <div style="font-size: 4rem; margin-bottom: 1rem; line-height: 1;">
+            {% if status_code == 404 %}🔍{% elif status_code == 403 %}🛡️{% else %}⚠️{% endif %}
+        </div>
+        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 0.9rem; padding: 0.4rem 0.8rem; margin-bottom: 1rem; display: inline-block;">
+            Error {{ status_code|default:"404" }}
+        </span>
+        <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary, #f8fafc); margin: 0.75rem 0;">
+            {{ error_title|default:"Page Not Set" }}
+        </h1>
+        <p style="color: var(--text-secondary, #94a3b8); font-size: 1rem; margin-bottom: 2rem; line-height: 1.6;">
+            {{ error_message|default:"The page or link you requested is not configured or does not exist." }}
+        </p>
+        {% if error_detail %}
+        <div style="background: rgba(0, 0, 0, 0.25); border-radius: 8px; padding: 0.85rem; font-family: monospace; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 2rem; text-align: left; word-break: break-word;">
+            {{ error_detail }}
+        </div>
+        {% endif %}
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{% url 'finance:dashboard' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+                🏠 Return to Dashboard
+            </a>
+            <a href="javascript:history.back()" class="btn btn-outline" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+                ⬅ Go Back
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

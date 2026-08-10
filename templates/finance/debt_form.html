@@ -1,0 +1,134 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}{{ action|default:"Add" }} Debt / Credit - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ action|default:"Add" }} Debt / Credit Entry</h1>
+    <p class="text-muted">Record debts owed by you or credits owed to you by saved beneficiaries.</p>
+</div>
+
+<div class="form-card max-w-3xl">
+    <form method="post" id="debt-form">
+        {% csrf_token %}
+
+        {% if action == 'Add' %}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem;">
+            <h3 style="font-size: 1.1rem; margin: 0; color: var(--text-primary);">Beneficiary Debt / Credit Entries</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addDebtRow()">+ Add Another Person / Split</button>
+        </div>
+
+        <div id="debt-rows" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Debt rows rendered dynamically -->
+        </div>
+
+        <!-- Hidden template for Beneficiary choices -->
+        <select id="beneficiary-options-template" style="display: none;">
+            <option value="">-- Select Beneficiary (Required) --</option>
+            {% for b in beneficiaries %}
+            <option value="{{ b.id }}">{{ b.name }} {% if b.phone_number %}({{ b.phone_number }}){% endif %}</option>
+            {% endfor %}
+        </select>
+
+        {% else %}
+        <!-- Edit Mode (Single Entry) -->
+        {% for field in form %}
+        <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label for="{{ field.id_for_label }}" style="font-weight:600; margin:0;">{{ field.label }}</label>
+                {% if field.name == 'beneficiary' %}
+                <a href="{% url 'finance:beneficiary_add' %}" style="font-size:0.85rem; color:var(--accent-blue); font-weight:600;">+ Create New Beneficiary</a>
+                {% endif %}
+            </div>
+            {{ field }}
+            {% if field.help_text %}
+            <small class="form-help">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+            <span class="form-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="form-actions" style="margin-top: 1.75rem;">
+            <a href="{% url 'finance:debts_credits' %}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Entry(ies)</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addDebtRow(benId = '', debtType = 'credit', amount = '', reason = '') {
+    const container = document.getElementById('debt-rows');
+    if (!container) return;
+
+    const rowIndex = Date.now() + Math.random().toString(36).substr(2, 4);
+    const selectOptions = document.getElementById('beneficiary-options-template').innerHTML;
+
+    const row = document.createElement('div');
+    row.className = 'debt-row';
+    row.id = `row-${rowIndex}`;
+    row.style.cssText = 'padding: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; position: relative;';
+
+    row.innerHTML = `
+        <div class="form-group" style="margin: 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label style="font-size: 0.85rem; font-weight: 600;">Beneficiary</label>
+                <a href="{% url 'finance:beneficiary_add' %}" style="font-size: 0.75rem; color: var(--accent-blue);">+ Add New</a>
+            </div>
+            <select name="beneficiary_id[]" class="form-input" required>
+                ${selectOptions}
+            </select>
+        </div>
+
+        <div class="form-group" style="margin: 0;">
+            <label style="font-size: 0.85rem; font-weight: 600;">Entry Type</label>
+            <select name="debt_type[]" class="form-input">
+                <option value="credit" ${debtType === 'credit' ? 'selected' : ''}>They Owe Me (Credit)</option>
+                <option value="debt" ${debtType === 'debt' ? 'selected' : ''}>I Owe Them (Debt)</option>
+            </select>
+        </div>
+
+        <div class="form-group" style="margin: 0;">
+            <label style="font-size: 0.85rem; font-weight: 600;">Amount (₹)</label>
+            <input type="number" name="original_amount[]" class="form-input" placeholder="Amount in ₹" step="0.01" min="0.01" value="${amount}" required>
+        </div>
+
+        <div class="form-group" style="margin: 0; grid-column: 1 / -1;">
+            <label style="font-size: 0.85rem; font-weight: 600;">Reason / Description (Optional)</label>
+            <input type="text" name="reason[]" class="form-input" placeholder="e.g., Shared lunch bill, borrowed cash..." value="${reason}">
+        </div>
+
+        <div style="position: absolute; top: 0.5rem; right: 0.5rem;">
+            <button type="button" class="btn btn-outline btn-sm" style="color: #f87171; border-color: rgba(239, 68, 68, 0.3); padding: 0.2rem 0.5rem;" onclick="removeDebtRow('${rowIndex}')">✕</button>
+        </div>
+    `;
+
+    container.appendChild(row);
+
+    if (benId) {
+        const sel = row.querySelector('select[name="beneficiary_id[]"]');
+        if (sel) sel.value = benId;
+    }
+}
+
+function removeDebtRow(rowIndex) {
+    const rows = document.querySelectorAll('.debt-row');
+    if (rows.length <= 1) {
+        alert('At least one entry row is required.');
+        return;
+    }
+    const target = document.getElementById(`row-${rowIndex}`);
+    if (target) target.remove();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('debt-rows')) {
+        addDebtRow();
+    }
+});
+</script>
+{% endblock %}

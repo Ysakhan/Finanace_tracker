@@ -1,0 +1,57 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Export Report - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>&#128196; Export Report</h1>
+    <p class="text-muted">Download your financial status report</p>
+</div>
+
+<div class="cards-grid" style="max-width: 800px; margin: 0 auto; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+    <div class="card card-stat">
+        <div class="card-header">
+            <span class="card-icon">&#128196;</span>
+            <span class="card-label">Text Report</span>
+        </div>
+        <p class="text-muted" style="padding: 0 1rem;">Plain text report including ALL details across all months (EMIs, loan tenure, remaining tenure, active & settled debts, credits, balances, and transactions).</p>
+        <div class="card-footer">
+            <a href="{% url 'finance:export_text' %}" class="btn btn-primary">Download .txt</a>
+        </div>
+    </div>
+
+    <div class="card card-stat">
+        <div class="card-header">
+            <span class="card-icon">&#128190;</span>
+            <span class="card-label">CSV / Excel Report</span>
+        </div>
+        <p class="text-muted" style="padding: 0 1rem;">Spreadsheet CSV file with full columns for tenure, remaining tenure, total loan amount, remaining balance, split details, debts, credits, and transactions.</p>
+        <div class="card-footer">
+            <a href="{% url 'finance:export_csv' %}" class="btn btn-primary">Download .csv</a>
+        </div>
+    </div>
+
+    <div class="card card-stat">
+        <div class="card-header">
+            <span class="card-icon">&#128211;</span>
+            <span class="card-label">PDF Report</span>
+        </div>
+        <p class="text-muted" style="padding: 0 1rem;">Landscape PDF report with structured tables for tenure, remaining tenure, loan progress, debts, credits, balances, and transactions.</p>
+        <div class="card-footer">
+            <a href="{% url 'finance:export_pdf' %}" class="btn btn-primary">Download .pdf</a>
+        </div>
+    </div>
+
+    <div class="card card-stat">
+        <div class="card-header">
+            <span class="card-icon">&#128424;</span>
+            <span class="card-label">Print View</span>
+        </div>
+        <p class="text-muted" style="padding: 0 1rem;">Opens a complete, printer-friendly HTML report with all financial records and full tenure details ready for printing.</p>
+        <div class="card-footer">
+            <a href="{% url 'finance:export_print' %}" target="_blank" class="btn btn-outline">Open Print Report</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
