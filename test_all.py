@@ -37,6 +37,8 @@ get_pages = [
     ('/export/csv/', 'export csv'),
     ('/export/pdf/', 'export pdf'),
     ('/export/print/', 'export print'),
+    ('/static/css/style.css', 'style.css static'),
+    ('/static/js/app.js', 'app.js static'),
 ]
 
 all_ok = True

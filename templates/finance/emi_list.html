@@ -114,14 +114,15 @@
 
         <div class="emi-card-actions" style="flex-wrap: wrap; gap: 6px;">
             {% if emi.status != 'paid' %}
-            <button type="button" class="btn btn-success btn-sm" onclick="openPayModal('{{ emi.pk }}', '{{ emi.title|escapejs }}', '{{ emi.full_amount }}', '{{ emi.personal_share }}', '{{ emi.split_with|escapejs }}', '{% url 'finance:emi_mark_paid' emi.pk %}')">
-                &#10004; Mark Paid
+            <button type="button" class="btn btn-success btn-sm" style="display: inline-flex; align-items: center; gap: 4px;" onclick="openPayModal('{{ emi.pk }}', '{{ emi.title|escapejs }}', '{{ emi.full_amount }}', '{{ emi.personal_share }}', '{{ emi.split_with|escapejs }}', '{% url 'finance:emi_mark_paid' emi.pk %}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Mark Paid
             </button>
             {% else %}
             <form method="post" action="{% url 'finance:emi_mark_paid' emi.pk %}" class="inline-form">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Revert {{ emi.title }} to UNPAID? This will refund original payment amount back to your account.')">
-                    &#215; Mark Unpaid
+                    Mark Unpaid
                 </button>
             </form>
             {% if emi.is_next_cycle_unlocked %}
@@ -139,7 +140,9 @@
     </div>
     {% empty %}
     <div class="empty-state">
-        <span class="empty-icon">&#128200;</span>
+        <span class="empty-icon" style="display: flex; justify-content: center; margin-bottom: 0.75rem; color: var(--text-muted);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </span>
         <h3>No EMIs for {{ current_month }}</h3>
         <p>Add your first EMI to get started.</p>
         <a href="{% url 'finance:emi_add' %}" class="btn btn-primary">+ Add EMI</a>

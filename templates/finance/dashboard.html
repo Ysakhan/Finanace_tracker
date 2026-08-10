@@ -10,8 +10,14 @@
         <p class="text-muted">{{ today|date:"F Y" }} Overview</p>
     </div>
     <div class="page-actions" style="display: flex; gap: 0.5rem;">
-        <a href="{% url 'finance:transfer_funds' %}" class="btn btn-outline">🔄 Transfer Money</a>
-        <a href="{% url 'finance:transaction_add' %}" class="btn btn-primary">+ Add Transaction</a>
+        <a href="{% url 'finance:transfer_funds' %}" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            Transfer Money
+        </a>
+        <a href="{% url 'finance:transaction_add' %}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Transaction
+        </a>
     </div>
 </div>
 
@@ -19,11 +25,13 @@
 <div class="cards-grid">
     <div class="card card-balance">
         <div class="card-header">
-            <span class="card-icon">&#127974;</span>
+            <span class="card-icon" style="color: var(--accent-blue);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 10v11"/><path d="M12 10v11"/><path d="M16 10v11"/></svg>
+            </span>
             <span class="card-label">Bank Balance</span>
         </div>
         <div class="card-value {% if balance.bank_balance < 0 %}text-danger{% else %}text-success{% endif %}">
-            {{ balance.bank_balance|floatformat:2 }}
+            ₹{{ balance.bank_balance|floatformat:2 }}
         </div>
         <div class="card-footer">
             <a href="{% url 'finance:balance_update' %}" class="card-link">Update</a>
@@ -32,7 +40,9 @@
 
     <div class="card card-balance">
         <div class="card-header">
-            <span class="card-icon">💵</span>
+            <span class="card-icon" style="color: var(--accent-green);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+            </span>
             <span class="card-label">Cash in Hand</span>
         </div>
         <div class="card-value {% if balance.cash_in_hand < 0 %}text-danger{% else %}text-success{% endif %}">
@@ -45,7 +55,9 @@
 
     <div class="card card-balance">
         <div class="card-header">
-            <span class="card-icon">&#128179;</span>
+            <span class="card-icon" style="color: var(--accent-purple);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </span>
             <span class="card-label">Credit Card</span>
         </div>
         <div class="card-value text-warning">
@@ -58,16 +70,20 @@
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#128200;</span>
+            <span class="card-icon" style="color: var(--accent-red);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </span>
             <span class="card-label">Monthly Outflow</span>
         </div>
-        <div class="card-value text-danger">{{ total_emi|floatformat:2 }}</div>
-        <div class="card-subtext">Personal: {{ total_personal|floatformat:2 }} | Reimb: {{ total_reimbursable|floatformat:2 }}</div>
+        <div class="card-value text-danger">₹{{ total_emi|floatformat:2 }}</div>
+        <div class="card-subtext">Personal: ₹{{ total_personal|floatformat:2 }} | Reimb: ₹{{ total_reimbursable|floatformat:2 }}</div>
     </div>
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#9989;</span>
+            <span class="card-icon" style="color: var(--accent-green);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </span>
             <span class="card-label">EMIs Paid</span>
         </div>
         <div class="card-value text-success">{{ paid_count }}</div>
@@ -76,7 +92,9 @@
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#10060;</span>
+            <span class="card-icon" style="color: var(--accent-yellow);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </span>
             <span class="card-label">EMIs Remaining</span>
         </div>
         <div class="card-value text-danger">{{ unpaid_count }}</div>
@@ -85,10 +103,12 @@
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#129309;</span>
+            <span class="card-icon" style="color: var(--accent-red);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7.5 7.5"/><path d="M3 21l7.5-7.5"/></svg>
+            </span>
             <span class="card-label">Debts You Owe</span>
         </div>
-        <div class="card-value text-danger">{{ total_debt|floatformat:2 }}</div>
+        <div class="card-value text-danger">₹{{ total_debt|floatformat:2 }}</div>
         <div class="card-footer">
             <a href="{% url 'finance:debts_credits' %}" class="card-link">View All</a>
         </div>
@@ -96,10 +116,12 @@
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#128176;</span>
+            <span class="card-icon" style="color: var(--accent-green);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+            </span>
             <span class="card-label">Credits Due</span>
         </div>
-        <div class="card-value text-success">{{ total_credit|floatformat:2 }}</div>
+        <div class="card-value text-success">₹{{ total_credit|floatformat:2 }}</div>
         <div class="card-footer">
             <a href="{% url 'finance:debts_credits' %}" class="card-link">View All</a>
         </div>
@@ -107,11 +129,13 @@
 
     <div class="card card-highlight">
         <div class="card-header">
-            <span class="card-icon">&#128178;</span>
+            <span class="card-icon" style="color: var(--accent-blue);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
             <span class="card-label">Liquidity Buffer</span>
         </div>
         <div class="card-value {% if liquidity < 0 %}text-danger{% elif liquidity < 5000 %}text-warning{% else %}text-success{% endif %}">
-            {{ liquidity|floatformat:2 }}
+            ₹{{ liquidity|floatformat:2 }}
         </div>
         <div class="card-subtext">Bank balance - Remaining EMIs</div>
     </div>
@@ -121,13 +145,16 @@
 {% if overdue_reminders %}
 <div class="alert alert-danger">
     <div class="alert-header">
-        <span>&#9888;&#65039; Overdue EMIs</span>
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Overdue EMIs
+        </span>
     </div>
     <div class="alert-body">
         {% for emi in overdue_reminders %}
         <div class="alert-item">
             <span class="alert-item-name">{{ emi.title }}</span>
-            <span class="alert-item-detail">Due Day {{ emi.due_day }} | {{ emi.personal_share|floatformat:2 }}</span>
+            <span class="alert-item-detail">Due Day {{ emi.due_day }} | ₹{{ emi.personal_share|floatformat:2 }}</span>
             <button type="button" class="btn btn-sm btn-danger" onclick="openPayModal('{{ emi.pk }}', '{{ emi.title|escapejs }}', '{{ emi.full_amount }}', '{{ emi.personal_share }}', '{{ emi.split_with|escapejs }}', '{% url 'finance:emi_mark_paid' emi.pk %}')">
                 Mark Paid
             </button>
@@ -141,13 +168,16 @@
 {% if upcoming %}
 <div class="alert alert-warning">
     <div class="alert-header">
-        <span>&#128276; Upcoming EMIs (Next 3 Days)</span>
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Upcoming EMIs (Next 3 Days)
+        </span>
     </div>
     <div class="alert-body">
         {% for emi in upcoming %}
         <div class="alert-item">
             <span class="alert-item-name">{{ emi.title }}</span>
-            <span class="alert-item-detail">Day {{ emi.due_day }} | {{ emi.personal_share|floatformat:2 }}</span>
+            <span class="alert-item-detail">Day {{ emi.due_day }} | ₹{{ emi.personal_share|floatformat:2 }}</span>
             <button type="button" class="btn btn-sm btn-success" onclick="openPayModal('{{ emi.pk }}', '{{ emi.title|escapejs }}', '{{ emi.full_amount }}', '{{ emi.personal_share }}', '{{ emi.split_with|escapejs }}', '{% url 'finance:emi_mark_paid' emi.pk %}')">
                 Pay Now
             </button>
@@ -178,7 +208,7 @@
                 <tr>
                     <td>{{ txn.title }}</td>
                     <td class="{% if txn.amount < 0 %}text-danger{% else %}text-success{% endif %}">
-                        {{ txn.amount|floatformat:2 }}
+                        ₹{{ txn.amount|floatformat:2 }}
                     </td>
                     <td><span class="badge badge-{{ txn.category|lower }}">{{ txn.get_category_display }}</span></td>
                     <td>{{ txn.created_at|date:"M d, H:i" }}</td>
@@ -195,13 +225,16 @@
 <div class="modal-overlay" id="payEmiModal">
     <div class="modal" style="max-width: 500px;">
         <div class="modal-header">
-            <h3><span style="margin-right:8px;">💳</span>Mark EMI as Paid</h3>
+            <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Mark EMI as Paid
+            </h3>
             <button class="modal-close" onclick="closePayModal()">&times;</button>
         </div>
         <form method="post" id="payEmiForm" action="">
             {% csrf_token %}
             <div class="modal-body" style="padding: 1.25rem 1.5rem;">
-                <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; margin-bottom: 1.25rem;">
+                <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 16px; margin-bottom: 1.25rem;">
                     <h4 id="payModalTitle" style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 6px;">EMI Title</h4>
                     <div style="display: flex; gap: 16px; font-size: 0.9rem; color: var(--text-secondary);">
                         <div>Monthly EMI: <strong style="color: var(--text-primary);" id="payModalFull">₹0.00</strong></div>
@@ -213,14 +246,14 @@
                 <div class="form-group" style="margin-bottom: 1.25rem;">
                     <label style="font-weight: 600; margin-bottom: 8px; display: block;">Who is paying this EMI?</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <label class="payer-option-card" id="optionMeCard" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg-input); border: 2px solid var(--accent-blue); border-radius: 8px; cursor: pointer;">
+                        <label class="payer-option-card" id="optionMeCard" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg-input); border: 2px solid var(--accent-blue); border-radius: 10px; cursor: pointer;">
                             <input type="radio" name="paid_by" value="me" checked onchange="togglePayerMode('me')" style="accent-color: var(--accent-blue);">
                             <div>
                                 <strong style="display: block; font-size: 0.95rem;">Paid by Me</strong>
                                 <small style="color: var(--text-muted); font-size: 0.78rem;">Debit from account</small>
                             </div>
                         </label>
-                        <label class="payer-option-card" id="optionSplitCard" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;">
+                        <label class="payer-option-card" id="optionSplitCard" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer;">
                             <input type="radio" name="paid_by" value="split_person" onchange="togglePayerMode('split_person')" style="accent-color: var(--accent-blue);">
                             <div>
                                 <strong style="display: block; font-size: 0.95rem;">Split Person</strong>
@@ -234,14 +267,14 @@
                 <div id="sectionPaidByMe" class="form-group" style="margin-bottom: 1.25rem;">
                     <label style="font-weight: 600; margin-bottom: 8px; display: block;">Select Payment Account</label>
                     <select name="payment_mode" class="form-input" style="width: 100%;">
-                        <option value="bank">🏦 Bank Account (Bal: ₹{{ balance.bank_balance|floatformat:2 }})</option>
-                        <option value="cash">💵 Cash in Hand (Bal: ₹{{ balance.cash_in_hand|floatformat:2 }})</option>
-                        <option value="credit_card">💳 Credit Card (CC Debt: ₹{{ balance.credit_card_balance|floatformat:2 }})</option>
+                        <option value="bank">Bank Account (Bal: ₹{{ balance.bank_balance|floatformat:2 }})</option>
+                        <option value="cash">Cash in Hand (Bal: ₹{{ balance.cash_in_hand|floatformat:2 }})</option>
+                        <option value="credit_card">Credit Card (CC Debt: ₹{{ balance.credit_card_balance|floatformat:2 }})</option>
                     </select>
                     
                     <div id="debitOptionGroup" style="margin-top: 1rem;">
                         <label style="font-weight: 600; margin-bottom: 6px; display: block;">Debit Amount Option</label>
-                        <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px;">
                             <label id="lblDebitFull" style="display: flex; align-items: flex-start; gap: 8px; font-size: 0.9rem; cursor: pointer;">
                                 <input type="radio" name="debit_option" value="full" checked style="margin-top: 3px; accent-color: var(--accent-blue);">
                                 <div>
@@ -265,13 +298,16 @@
                     <label style="font-weight: 600; margin-bottom: 6px; display: block;">Payer Name</label>
                     <input type="text" name="payer_name" id="payModalPayerName" class="form-input" placeholder="e.g. John Doe">
                     <small class="form-help" style="color: var(--accent-yellow); font-weight: 500; margin-top: 6px; display: block;">
-                        ℹ️ No funds will be debited from your account. Transaction logged as paid by split person.
+                        No funds will be debited from your account. Transaction logged as paid by split person.
                     </small>
                 </div>
 
                 <div class="form-actions" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 10px;">
                     <button type="button" class="btn btn-outline" onclick="closePayModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success">✔ Confirm & Mark Paid</button>
+                    <button type="submit" class="btn btn-success" style="display: flex; align-items: center; gap: 0.4rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Confirm & Mark Paid
+                    </button>
                 </div>
             </div>
         </form>

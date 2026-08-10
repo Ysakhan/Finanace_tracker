@@ -6,7 +6,10 @@
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
     <div>
         <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px;">
-            <span>👥</span> Beneficiaries Directory
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: var(--radius-pill); background: rgba(79, 140, 255, 0.15); border: 1px solid rgba(79, 140, 255, 0.3); color: var(--accent-blue);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </span>
+            Beneficiaries Directory
         </h1>
         <p class="text-muted" style="font-size: 0.95rem; margin-top: 4px;">
             Manage contacts for debt and credit transactions. All shared EMIs and debts are linked to these beneficiaries.
@@ -14,7 +17,8 @@
     </div>
     <div class="page-actions" style="display: flex; align-items: center; gap: 10px;">
         <a href="{% url 'finance:beneficiary_add' %}" class="btn btn-primary" style="padding: 10px 18px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-            <span>+</span> Add Beneficiary
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Beneficiary
         </a>
     </div>
 </div>
@@ -22,11 +26,13 @@
 <!-- Search & Counter Bar -->
 <div class="card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
     <div style="display: flex; align-items: center; gap: 10px; width: 100%; max-width: 380px;">
-        <span style="font-size: 1.1rem; color: var(--text-muted);">🔍</span>
+        <span style="color: var(--text-muted); display: flex; align-items: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
         <input type="text" id="beneficiary-search" class="form-input" placeholder="Search beneficiary name, phone, or UPI..." onkeyup="filterBeneficiaries()" style="padding: 8px 14px; font-size: 0.95rem; width: 100%;">
     </div>
     <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.9rem; padding: 6px 12px; border: 1px solid rgba(56, 189, 248, 0.3);">
+        <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.9rem; padding: 6px 12px; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: var(--radius-pill);">
             Total Contacts: <strong id="ben-count">{{ beneficiaries|length }}</strong>
         </span>
     </div>
@@ -46,7 +52,7 @@
             </div>
             
             <div style="overflow: hidden; flex: 1;">
-                <h3 style="font-size: 1.2rem; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; word-break: break-word; letter-spacing: 0.2px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; word-break: break-word; letter-spacing: 0.2px;">
                     {{ b.name }}
                 </h3>
                 <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Linked Beneficiary</span>
@@ -57,7 +63,8 @@
         <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); padding: 0.85rem 1rem; border-radius: 10px;">
             <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;">
                 <span style="color: #cbd5e1; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                    <span>📞</span> Phone
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Phone
                 </span>
                 {% if b.phone_number %}
                 <span style="font-weight: 600; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 2px 8px; border-radius: 6px;">
@@ -70,7 +77,8 @@
 
             <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;">
                 <span style="color: #cbd5e1; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                    <span>💳</span> UPI / Bank
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    UPI / Bank
                 </span>
                 {% if b.upi_id %}
                 <span style="font-weight: 600; color: #34d399; background: rgba(52, 211, 153, 0.12); padding: 2px 8px; border-radius: 6px; word-break: break-all;">
@@ -97,7 +105,9 @@
     </div>
     {% empty %}
     <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: 14px;">
-        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">👥</div>
+        <div style="display: flex; justify-content: center; margin-bottom: 0.75rem; color: var(--text-muted);">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
         <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem;">No Beneficiaries Found</h3>
         <p class="text-muted" style="margin-bottom: 1.25rem;">Create your first contact to track shared debts, credits, and EMIs.</p>
         <a href="{% url 'finance:beneficiary_add' %}" class="btn btn-primary">+ Add Beneficiary</a>

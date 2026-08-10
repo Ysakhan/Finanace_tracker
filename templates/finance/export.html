@@ -3,15 +3,22 @@
 {% block title %}Export Report - Finance Tracker{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>&#128196; Export Report</h1>
-    <p class="text-muted">Download your financial status report</p>
+<div class="page-header" style="display: flex; align-items: center; gap: 0.75rem;">
+    <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: var(--radius-pill); background: rgba(79, 140, 255, 0.15); border: 1px solid rgba(79, 140, 255, 0.3); color: var(--accent-blue);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </span>
+    <div>
+        <h1>Export Report</h1>
+        <p class="text-muted">Download your financial status report</p>
+    </div>
 </div>
 
 <div class="cards-grid" style="max-width: 800px; margin: 0 auto; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#128196;</span>
+            <span class="card-icon" style="color: var(--accent-blue);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </span>
             <span class="card-label">Text Report</span>
         </div>
         <p class="text-muted" style="padding: 0 1rem;">Plain text report including ALL details across all months (EMIs, loan tenure, remaining tenure, active & settled debts, credits, balances, and transactions).</p>
@@ -22,7 +29,9 @@
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#128190;</span>
+            <span class="card-icon" style="color: var(--accent-green);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </span>
             <span class="card-label">CSV / Excel Report</span>
         </div>
         <p class="text-muted" style="padding: 0 1rem;">Spreadsheet CSV file with full columns for tenure, remaining tenure, total loan amount, remaining balance, split details, debts, credits, and transactions.</p>
@@ -33,7 +42,9 @@
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#128211;</span>
+            <span class="card-icon" style="color: var(--accent-red);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15a2 2 0 0 1 2-2h1v4h-1a2 2 0 0 1-2-2z"/></svg>
+            </span>
             <span class="card-label">PDF Report</span>
         </div>
         <p class="text-muted" style="padding: 0 1rem;">Landscape PDF report with structured tables for tenure, remaining tenure, loan progress, debts, credits, balances, and transactions.</p>
@@ -44,7 +55,9 @@
 
     <div class="card card-stat">
         <div class="card-header">
-            <span class="card-icon">&#128424;</span>
+            <span class="card-icon" style="color: var(--accent-purple);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            </span>
             <span class="card-label">Print View</span>
         </div>
         <p class="text-muted" style="padding: 0 1rem;">Opens a complete, printer-friendly HTML report with all financial records and full tenure details ready for printing.</p>

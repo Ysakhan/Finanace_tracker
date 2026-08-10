@@ -3,15 +3,22 @@
 {% block title %}Finance Assistant - Finance Tracker{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>&#129302; Finance Companion</h1>
-    <p class="text-muted">Ask me anything about your finances</p>
+<div class="page-header" style="display: flex; align-items: center; gap: 0.75rem;">
+    <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: var(--radius-pill); background: rgba(79, 140, 255, 0.15); border: 1px solid rgba(79, 140, 255, 0.3); color: var(--accent-blue);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="4"/><line x1="9" y1="13" x2="9.01" y2="13"/><line x1="15" y1="13" x2="15.01" y2="13"/><path d="M10 17s1 1 2 1 2-1 2-1"/></svg>
+    </span>
+    <div>
+        <h1>Finance Companion</h1>
+        <p class="text-muted">Ask me anything about your finances</p>
+    </div>
 </div>
 
 <div class="chat-container">
     <div class="chat-messages" id="chatMessages">
         <div class="chat-message assistant">
-            <div class="chat-avatar">&#129302;</div>
+            <div class="chat-avatar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="4"/><line x1="9" y1="13" x2="9.01" y2="13"/><line x1="15" y1="13" x2="15.01" y2="13"/><path d="M10 17s1 1 2 1 2-1 2-1"/></svg>
+            </div>
             <div class="chat-bubble">
                 Hello! I'm your Finance Companion. I can help you with:
                 <br><br>
@@ -28,7 +35,9 @@
     <div class="chat-input-area">
         <form id="chatForm" class="chat-form">
             <input type="text" id="chatInput" class="chat-input" placeholder="Ask about your finances..." autocomplete="off">
-            <button type="submit" class="btn btn-primary chat-send">&#10148;</button>
+            <button type="submit" class="btn btn-primary chat-send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
         </form>
     </div>
 </div>
@@ -39,6 +48,9 @@
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
 const chatMessages = document.getElementById('chatMessages');
+
+const userSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+const botSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="4"/><line x1="9" y1="13" x2="9.01" y2="13"/><line x1="15" y1="13" x2="15.01" y2="13"/><path d="M10 17s1 1 2 1 2-1 2-1"/></svg>`;
 
 chatForm.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -73,7 +85,7 @@ chatForm.addEventListener('submit', async function(e) {
 function addMessage(text, type) {
     const div = document.createElement('div');
     div.className = 'chat-message ' + type;
-    const avatar = type.includes('user') ? '&#128100;' : '&#129302;';
+    const avatar = type.includes('user') ? userSvg : botSvg;
     div.innerHTML = `
         <div class="chat-avatar">${avatar}</div>
         <div class="chat-bubble">${text.replace(/\n/g, '<br>')}</div>
