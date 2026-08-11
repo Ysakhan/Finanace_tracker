@@ -59,11 +59,11 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="{% if user.is_authenticated %}{% url 'finance:dashboard' %}{% else %}{% url 'finance:login' %}{% endif %}" class="nav-brand" style="text-decoration: none;">
-                <span class="brand-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(99,102,241,0.4);">
-                    ⚡
+                <span class="brand-icon" style="background: rgba(99, 102, 241, 0.12); color: #818cf8; width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(99, 102, 241, 0.25);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5H10a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H9"/><path d="M12 7.5v9"/></svg>
                 </span>
                 <div>
-                    <span class="brand-text" style="font-weight: 800; font-size: 1.25rem; background: linear-gradient(135deg, var(--text-heading), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FinRoll</span>
+                    <span class="brand-text" style="font-weight: 800; font-size: 1.25rem; color: var(--text-heading);">FinRoll</span>
                     <span style="display: block; font-size: 0.68rem; color: var(--text-muted); font-weight: 600; letter-spacing: -0.2px; margin-top: -3px;">Smart Bookkeeping, Effortless Tracking</span>
                 </div>
             </a>
@@ -79,7 +79,9 @@
                     </span> Dashboard
                 </a>
                 <a href="{% url 'finance:emi_list' %}" class="nav-link {% if 'emi' in request.resolver_match.url_name %}active{% endif %}">
-                    <span class="nav-icon" style="font-size: 1rem;">⚡</span> EMIs
+                    <span class="nav-icon" style="display: inline-flex; align-items: center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    </span> EMIs
                 </a>
                 <a href="{% url 'finance:debts_credits' %}" class="nav-link {% if 'debt' in request.resolver_match.url_name %}active{% endif %}">
                     <span class="nav-icon">
@@ -111,6 +113,15 @@
                     {{ user.username }}
                 </a>
                 <a href="{% url 'finance:logout' %}" class="nav-link nav-logout">Logout</a>
+            </div>
+            {% else %}
+            <!-- Unauthenticated Navbar Action Link -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                {% if request.resolver_match.url_name == 'register' %}
+                <a href="{% url 'finance:login' %}" class="btn btn-outline btn-sm" style="border-radius: 20px; font-weight: 600; font-size: 0.88rem; padding: 6px 16px;">Sign In</a>
+                {% else %}
+                <a href="{% url 'finance:register' %}" class="btn btn-primary btn-sm" style="border-radius: 20px; font-weight: 700; font-size: 0.88rem; padding: 6px 18px; background: linear-gradient(135deg, var(--primary), #4f46e5); border: none; color: #fff; box-shadow: 0 4px 12px rgba(99,102,241,0.3);">Create Account</a>
+                {% endif %}
             </div>
             {% endif %}
         </div>
