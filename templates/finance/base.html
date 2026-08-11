@@ -55,14 +55,18 @@
     {% endfor %}
     {% endif %}
 
-    <!-- Navigation -->
+    <!-- Navigation (Displayed after login only) -->
+    {% if user.is_authenticated %}
     <nav class="navbar">
         <div class="nav-container">
-            <a href="{% url 'finance:dashboard' %}" class="nav-brand">
-                <span class="brand-icon">
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+            <a href="{% url 'finance:dashboard' %}" class="nav-brand" style="text-decoration: none;">
+                <span class="brand-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(99,102,241,0.4);">
+                    ⚡
                 </span>
-                <span class="brand-text">Finance Tracker</span>
+                <div>
+                    <span class="brand-text" style="font-weight: 800; font-size: 1.25rem; background: linear-gradient(135deg, var(--text-heading), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FinRoll</span>
+                    <span style="display: block; font-size: 0.68rem; color: var(--text-muted); font-weight: 600; letter-spacing: -0.2px; margin-top: -3px;">Smart Bookkeeping, Effortless Tracking</span>
+                </div>
             </a>
             <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">
                 <span></span><span></span><span></span>
@@ -74,9 +78,7 @@
                     </span> Dashboard
                 </a>
                 <a href="{% url 'finance:emi_list' %}" class="nav-link {% if 'emi' in request.resolver_match.url_name %}active{% endif %}">
-                    <span class="nav-icon">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    </span> EMIs
+                    <span class="nav-icon" style="font-size: 1rem;">⚡</span> EMIs
                 </a>
                 <a href="{% url 'finance:debts_credits' %}" class="nav-link {% if 'debt' in request.resolver_match.url_name %}active{% endif %}">
                     <span class="nav-icon">
@@ -103,16 +105,15 @@
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </span> Export
                 </a>
-                {% if user.is_authenticated %}
-                <span class="nav-link nav-user">
+                <a href="{% url 'finance:profile' %}" class="nav-link nav-user {% if 'profile' in request.resolver_match.url_name %}active{% endif %}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     {{ user.username }}
-                </span>
+                </a>
                 <a href="{% url 'finance:logout' %}" class="nav-link nav-logout">Logout</a>
-                {% endif %}
             </div>
         </div>
     </nav>
+    {% endif %}
 
     <!-- Main Content -->
     <main class="main-content">

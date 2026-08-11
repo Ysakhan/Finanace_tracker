@@ -33,13 +33,20 @@ urlpatterns = [
     path('beneficiaries/<int:pk>/edit/', views.beneficiary_edit, name='beneficiary_edit'),
     path('beneficiaries/<int:pk>/delete/', views.beneficiary_delete, name='beneficiary_delete'),
 
-    # Balance & Transfer
+    # Profile & Security
+    path('profile/', views.profile_view, name='profile'),
+    path('profile/send-otp/', views.send_profile_otp, name='send_profile_otp'),
+    path('profile/verify-otp/', views.verify_profile_otp, name='verify_profile_otp'),
+
+    # Balance & Transfer & Adjustment
     path('balance/update/', views.balance_update, name='balance_update'),
+    path('balance/adjust/', views.adjust_balance_view, name='adjust_balance'),
     path('transfer/', views.transfer_funds, name='transfer_funds'),
 
     # Transactions
     path('transactions/', views.transaction_list, name='transaction_list'),
     path('transactions/add/', views.transaction_add, name='transaction_add'),
+    path('transactions/bulk-action/', views.transaction_bulk_action, name='transaction_bulk_action'),
     path('transactions/<int:pk>/edit/', views.transaction_edit, name='transaction_edit'),
     path('transactions/<int:pk>/delete/', views.transaction_delete, name='transaction_delete'),
 

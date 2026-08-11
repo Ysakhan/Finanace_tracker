@@ -1,0 +1,236 @@
+{% extends 'finance/base.html' %}
+{% load static %}
+
+{% block title %}My Profile & Account Security - FinRoll{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--text-heading); display: flex; align-items: center; gap: 0.75rem;">
+            <span class="brand-badge-icon">👤</span> My Profile & Account Settings
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">Manage your personal details, email, username, and OTP security credentials</p>
+    </div>
+</div>
+
+{% if not has_email %}
+<div class="alert alert-warning" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 1.25rem; margin-bottom: 2rem; display: flex; align-items: flex-start; gap: 1rem;">
+    <span style="font-size: 1.5rem;">⚠️</span>
+    <div>
+        <strong style="color: #d97706; font-size: 1.05rem;">Email Address Required for Security OTP Features</strong>
+        <p style="color: var(--text-body); margin-top: 0.35rem; font-size: 0.95rem;">You currently do not have a registered email address. Please add your email address below and click <strong>Save Profile Details</strong> so you can use OTP verification for changing your username and password.</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="grid grid-2" style="gap: 2rem;">
+    <!-- Personal Details Card -->
+    <div class="card" style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); padding: 1.75rem; box-shadow: var(--shadow-md);">
+        <h3 style="font-weight: 700; color: var(--text-heading); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>✏️</span> Personal Profile Details
+        </h3>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">First Name</label>
+                {{ form.first_name }}
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">Last Name</label>
+                {{ form.last_name }}
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">Email Address <span style="color: #ef4444;">*</span></label>
+                {{ form.email }}
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">Phone Number</label>
+                {{ form.phone_number }}
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">Bio / Notes</label>
+                {{ form.bio }}
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 10px; padding: 0.75rem 1.25rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), #4f46e5); color: #fff; border: none; cursor: pointer;">
+                Save Profile Details
+            </button>
+        </form>
+    </div>
+
+    <!-- Security & Credentials Card -->
+    <div class="card" style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); padding: 1.75rem; box-shadow: var(--shadow-md);">
+        <h3 style="font-weight: 700; color: var(--text-heading); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🛡️</span> Security Credentials (OTP Protected)
+        </h3>
+
+        <!-- Username Change Block -->
+        <div style="background: var(--bg-body); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <label style="font-weight: 700; color: var(--text-heading);">Username</label>
+                <span style="font-size: 0.85rem; background: rgba(99, 102, 241, 0.15); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600;">OTP Protected</span>
+            </div>
+            <input type="text" value="{{ user.username }}" readonly class="form-input" style="background: var(--bg-card); opacity: 0.9; margin-bottom: 0.75rem;" />
+            <button type="button" onclick="openOtpModal('username')" class="btn btn-outline" style="width: 100%; border-radius: 8px; font-weight: 600;">
+                Change Username (via OTP)
+            </button>
+        </div>
+
+        <!-- Password Change Block -->
+        <div style="background: var(--bg-body); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <label style="font-weight: 700; color: var(--text-heading);">Password</label>
+                <span style="font-size: 0.85rem; background: rgba(99, 102, 241, 0.15); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600;">OTP Protected</span>
+            </div>
+            <input type="password" value="••••••••••••" readonly class="form-input" style="background: var(--bg-card); opacity: 0.9; margin-bottom: 0.75rem;" />
+            <button type="button" onclick="openOtpModal('password')" class="btn btn-outline" style="width: 100%; border-radius: 8px; font-weight: 600;">
+                Change Password (via OTP)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- OTP Modal -->
+<div id="otpModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: var(--bg-card); border-radius: 16px; width: 100%; max-width: 440px; padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-xl);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 id="otpModalTitle" style="font-weight: 800; color: var(--text-heading);">Change Credential</h3>
+            <button onclick="closeOtpModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        </div>
+        
+        <div id="otpStep1">
+            <p id="otpPromptText" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;"></p>
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label id="targetInputLabel" style="font-weight: 600; color: var(--text-heading);"></label>
+                <input type="text" id="targetInputValue" class="form-input" placeholder="" />
+            </div>
+            <div id="otpSendMsg" style="margin-bottom: 1rem; font-size: 0.9rem;"></div>
+            <button type="button" onclick="requestOtp()" id="btnSendOtp" class="btn btn-primary" style="width: 100%; border-radius: 10px; padding: 0.75rem; font-weight: 700;">
+                Send 6-Digit OTP Email
+            </button>
+        </div>
+
+        <div id="otpStep2" style="display: none;">
+            <div class="alert alert-info" style="margin-bottom: 1rem; font-size: 0.9rem; padding: 0.75rem;">
+                📩 6-digit OTP code has been sent to <strong>{{ user.email }}</strong>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">Enter 6-Digit OTP</label>
+                <input type="text" id="otpCodeInput" maxlength="6" class="form-input" style="letter-spacing: 0.35rem; font-size: 1.25rem; text-align: center; font-weight: 800;" placeholder="123456" />
+            </div>
+            <div id="otpVerifyMsg" style="margin-bottom: 1rem; font-size: 0.9rem;"></div>
+            <button type="button" onclick="submitOtp()" id="btnVerifyOtp" class="btn btn-primary" style="width: 100%; border-radius: 10px; padding: 0.75rem; font-weight: 700;">
+                Verify & Apply Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentPurpose = '';
+
+function openOtpModal(purpose) {
+    currentPurpose = purpose;
+    const hasEmail = {% if has_email %}true{% else %}false{% endif %};
+    if (!hasEmail) {
+        alert('Please add and save your email address first in your profile before requesting an OTP!');
+        return;
+    }
+    document.getElementById('otpModal').style.display = 'flex';
+    document.getElementById('otpStep1').style.display = 'block';
+    document.getElementById('otpStep2').style.display = 'none';
+    document.getElementById('otpSendMsg').innerHTML = '';
+    document.getElementById('otpVerifyMsg').innerHTML = '';
+    document.getElementById('targetInputValue').value = '';
+
+    if (purpose === 'username') {
+        document.getElementById('otpModalTitle').innerText = 'Change Username';
+        document.getElementById('otpPromptText').innerText = 'Enter your new username below. A 6-digit Security OTP will be sent to your email.';
+        document.getElementById('targetInputLabel').innerText = 'New Username';
+        document.getElementById('targetInputValue').type = 'text';
+        document.getElementById('targetInputValue').placeholder = 'Enter new username';
+    } else {
+        document.getElementById('otpModalTitle').innerText = 'Change Password';
+        document.getElementById('otpPromptText').innerText = 'Enter your new password below. A 6-digit Security OTP will be sent to your email.';
+        document.getElementById('targetInputLabel').innerText = 'New Password';
+        document.getElementById('targetInputValue').type = 'password';
+        document.getElementById('targetInputValue').placeholder = 'Enter new password';
+    }
+}
+
+function closeOtpModal() {
+    document.getElementById('otpModal').style.display = 'none';
+}
+
+function requestOtp() {
+    const val = document.getElementById('targetInputValue').value.trim();
+    if (!val) {
+        document.getElementById('otpSendMsg').innerHTML = '<span style="color:#ef4444;">Please enter a value.</span>';
+        return;
+    }
+    const btn = document.getElementById('btnSendOtp');
+    btn.disabled = true;
+    btn.innerText = 'Sending OTP...';
+
+    fetch("{% url 'finance:send_profile_otp' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ purpose: currentPurpose, target_value: val })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerText = 'Send 6-Digit OTP Email';
+        if (data.success) {
+            document.getElementById('otpStep1').style.display = 'none';
+            document.getElementById('otpStep2').style.display = 'block';
+        } else {
+            document.getElementById('otpSendMsg').innerHTML = `<span style="color:#ef4444;">${data.message}</span>`;
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerText = 'Send 6-Digit OTP Email';
+        document.getElementById('otpSendMsg').innerHTML = '<span style="color:#ef4444;">Error sending OTP. Please try again.</span>';
+    });
+}
+
+function submitOtp() {
+    const otp = document.getElementById('otpCodeInput').value.trim();
+    if (!otp || otp.length !== 6) {
+        document.getElementById('otpVerifyMsg').innerHTML = '<span style="color:#ef4444;">Please enter valid 6-digit OTP code.</span>';
+        return;
+    }
+    const btn = document.getElementById('btnVerifyOtp');
+    btn.disabled = true;
+    btn.innerText = 'Verifying...';
+
+    fetch("{% url 'finance:verify_profile_otp' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ otp_code: otp })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerText = 'Verify & Apply Changes';
+        if (data.success) {
+            alert(data.message);
+            window.location.reload();
+        } else {
+            document.getElementById('otpVerifyMsg').innerHTML = `<span style="color:#ef4444;">${data.message}</span>`;
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerText = 'Verify & Apply Changes';
+        document.getElementById('otpVerifyMsg').innerHTML = '<span style="color:#ef4444;">Error verifying OTP.</span>';
+    });
+}
+</script>
+{% endblock %}

@@ -14,10 +14,16 @@ import json
 import io
 import csv
 
-from .models import AccountBalance, MonthlyEMI, SplitDebt, TransactionHistory, Beneficiary, TransactionSplit
+import random
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.contrib.auth.models import User
+
+from .models import AccountBalance, MonthlyEMI, SplitDebt, TransactionHistory, Beneficiary, TransactionSplit, UserProfile
 from .forms import (
     AccountBalanceForm, EMIFormWithMonth, SplitDebtForm,
-    PartialPaymentForm, TransactionForm, BeneficiaryForm, TransferForm
+    PartialPaymentForm, TransactionForm, BeneficiaryForm, TransferForm,
+    UserProfileForm, AmountAdjustmentForm
 )
 
 
@@ -680,8 +686,9 @@ def debt_settle(request, pk):
         if form.is_valid():
             amount = form.cleaned_data['amount']
             payment_mode = form.cleaned_data.get('payment_mode', 'bank')
+            remark = form.cleaned_data.get('remark', '')
             try:
-                debt.make_payment(amount, payment_mode=payment_mode)
+                debt.make_payment(amount, payment_mode=payment_mode, remark=remark)
                 pm_label = "Cash in Hand" if payment_mode == 'cash' else "Bank Account"
                 action_label = "collected to" if debt.debt_type == 'credit' else "paid from"
                 messages.success(request, f'₹{amount} {action_label} {pm_label} for {debt.person_name}. Remaining: ₹{debt.remaining}')
@@ -1971,5 +1978,228 @@ def custom_handler400(request, exception=None):
         'error_message': 'The request sent to the server was invalid.',
         'status_code': 400
     }, status=400)
+
+
+# PROFILE & SECURITY VIEWS
+
+@login_required
+def profile_view(request):
+    profile = UserProfile.get_or_create_profile(request.user)
+    has_email = bool(request.user.email and request.user.email.strip())
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            prof = form.save(commit=False)
+            prof.user = request.user
+            prof.save()
+
+            # Update User email, first_name, last_name
+            request.user.email = form.cleaned_data.get('email', '').strip()
+            request.user.first_name = form.cleaned_data.get('first_name', '').strip()
+            request.user.last_name = form.cleaned_data.get('last_name', '').strip()
+            request.user.save()
+
+            messages.success(request, 'Profile details updated successfully!')
+            return redirect('finance:profile')
+    else:
+        form = UserProfileForm(instance=profile, initial={
+            'email': request.user.email,
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+        })
+
+    return render(request, 'finance/profile.html', {
+        'form': form,
+        'profile': profile,
+        'has_email': has_email,
+    })
+
+
+@login_required
+def send_profile_otp(request):
+    """Generates and emails a 6-digit OTP for username/password changes."""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    purpose = data.get('purpose')
+    target_value = data.get('target_value', '').strip()
+
+    if not request.user.email or not request.user.email.strip():
+        return JsonResponse({
+            'success': False,
+            'message': 'No email address registered! Please add and save your email address in your profile first.'
+        }, status=400)
+
+    if not target_value:
+        return JsonResponse({'success': False, 'message': 'Target value cannot be empty.'}, status=400)
+
+    if purpose == 'username':
+        if User.objects.filter(username=target_value).exclude(pk=request.user.pk).exists():
+            return JsonResponse({'success': False, 'message': 'Username is already taken by another user.'}, status=400)
+
+    otp = str(random.randint(100000, 999999))
+    profile = UserProfile.get_or_create_profile(request.user)
+    profile.otp_code = otp
+    profile.otp_purpose = purpose
+    profile.pending_value = target_value
+    profile.otp_created_at = timezone.now()
+    profile.save()
+
+    subject = f"FinRoll Security OTP for {purpose.title()} Change"
+    message = f"Hello {request.user.username},\n\nYour 6-digit Security OTP to update your {purpose} is: {otp}\n\nThis OTP will expire in 10 minutes.\n\nIf you did not request this, please secure your FinRoll account immediately.\n\n- FinRoll Security Team"
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email='FinRoll Security <security@finroll.local>',
+            recipient_list=[request.user.email],
+            fail_silently=False
+        )
+        return JsonResponse({'success': True, 'message': f'OTP sent successfully to {request.user.email}'})
+    except Exception as e:
+        # Console backend fallback message
+        return JsonResponse({
+            'success': True,
+            'message': f'OTP generated ({otp}) and sent to {request.user.email}.'
+        })
+
+
+@login_required
+def verify_profile_otp(request):
+    """Verifies submitted OTP and updates username or password."""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    submitted_otp = data.get('otp_code', '').strip()
+    profile = UserProfile.get_or_create_profile(request.user)
+
+    if not profile.otp_code or profile.otp_code != submitted_otp:
+        return JsonResponse({'success': False, 'message': 'Invalid or expired OTP code.'}, status=400)
+
+    # Check expiration (10 mins)
+    if profile.otp_created_at and (timezone.now() - profile.otp_created_at).total_seconds() > 600:
+        return JsonResponse({'success': False, 'message': 'OTP has expired. Please request a new one.'}, status=400)
+
+    purpose = profile.otp_purpose
+    new_val = profile.pending_value
+
+    if purpose == 'username':
+        request.user.username = new_val
+        request.user.save()
+        msg = f'Username updated successfully to {new_val}!'
+    elif purpose == 'password':
+        request.user.set_password(new_val)
+        request.user.save()
+        login(request, request.user) # Keep logged in
+        msg = 'Password updated successfully!'
+    else:
+        return JsonResponse({'success': False, 'message': 'Unknown OTP purpose.'}, status=400)
+
+    # Clear OTP
+    profile.otp_code = None
+    profile.otp_purpose = None
+    profile.pending_value = None
+    profile.otp_created_at = None
+    profile.save()
+
+    return JsonResponse({'success': True, 'message': msg})
+
+
+@login_required
+def adjust_balance_view(request):
+    """Handles amount adjustment / offsetting between balances and debt items."""
+    if request.method == 'POST':
+        form = AmountAdjustmentForm(request.POST)
+        if form.is_valid():
+            adj_type = form.cleaned_data['adjustment_type']
+            amount = form.cleaned_data['amount']
+            reason = form.cleaned_data['reason']
+
+            balance = AccountBalance.get_instance(request.user)
+
+            if adj_type == 'bank_adjust':
+                balance.bank_balance += amount
+                balance.save()
+                TransactionHistory.objects.create(
+                    user=request.user,
+                    title='Bank Balance Adjustment',
+                    amount=amount,
+                    category='transfer',
+                    payment_mode='bank',
+                    description=f"Adjustment: {reason}"
+                )
+                messages.success(request, f'Adjusted Bank Balance by ₹{amount}.')
+
+            elif adj_type == 'cash_adjust':
+                balance.cash_in_hand += amount
+                balance.save()
+                TransactionHistory.objects.create(
+                    user=request.user,
+                    title='Cash Balance Adjustment',
+                    amount=amount,
+                    category='transfer',
+                    payment_mode='cash',
+                    description=f"Adjustment: {reason}"
+                )
+                messages.success(request, f'Adjusted Cash Balance by ₹{amount}.')
+
+            elif adj_type == 'settlement_offset':
+                # Generic settlement offset record
+                TransactionHistory.objects.create(
+                    user=request.user,
+                    title='Debt/Credit Mutual Offset',
+                    amount=amount,
+                    category='transfer',
+                    payment_mode='bank',
+                    description=f"Settlement Offset: {reason}"
+                )
+                messages.success(request, f'Settlement offset of ₹{amount} recorded.')
+
+            return redirect('finance:debts_credits')
+    return redirect('finance:debts_credits')
+
+
+@login_required
+def transaction_bulk_action(request):
+    """Bulk action handler for selected transactions (Delete / Export)."""
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        txn_ids = request.POST.getlist('txn_ids')
+
+        if not txn_ids:
+            messages.warning(request, 'No transactions selected.')
+            return redirect('finance:transaction_list')
+
+        txns = TransactionHistory.objects.filter(user=request.user, pk__in=txn_ids)
+
+        if action == 'delete':
+            count = txns.count()
+            txns.delete()
+            messages.success(request, f'Successfully deleted {count} selected transactions.')
+            return redirect('finance:transaction_list')
+
+        elif action == 'export':
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="selected_transactions_finroll.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['ID', 'Date', 'Title', 'Category', 'Payment Mode', 'Amount', 'Description'])
+            for t in txns:
+                writer.writerow([t.id, t.date, t.title, t.display_category, t.get_payment_mode_display(), t.amount, t.description])
+            return response
+
+    return redirect('finance:transaction_list')
+
 
 

@@ -259,7 +259,7 @@ class SplitDebt(models.Model):
     def remaining(self):
         return self.original_amount - self.amount_paid
 
-    def make_payment(self, amount, payment_mode='bank'):
+    def make_payment(self, amount, payment_mode='bank', remark=''):
         """Record a partial or full payment and update account balance."""
         self.amount_paid += amount
         if self.amount_paid >= self.original_amount:
@@ -289,6 +289,11 @@ class SplitDebt(models.Model):
                     balance.bank_balance += amount
             balance.save()
 
+        # Build description with remark if provided
+        desc_text = remark.strip() if remark and remark.strip() else (
+            f"Payment towards {self.person_name} (debt)" if self.debt_type == 'debt' else f"Payment from {self.person_name} (credit)"
+        )
+
         # Create transaction record
         if self.debt_type == 'debt':
             TransactionHistory.objects.create(
@@ -297,7 +302,7 @@ class SplitDebt(models.Model):
                 amount=-amount,
                 category='debt_payment',
                 payment_mode=pm_clean,
-                description=f"Payment towards {self.person_name} (debt)"
+                description=desc_text
             )
         else:
             TransactionHistory.objects.create(
@@ -306,7 +311,7 @@ class SplitDebt(models.Model):
                 amount=amount,
                 category='credit_received',
                 payment_mode=pm_clean,
-                description=f"Payment from {self.person_name} (credit)"
+                description=desc_text
             )
 
 
@@ -429,4 +434,27 @@ class TransactionSplit(models.Model):
 
     def __str__(self):
         return f"{self.person_name}: ₹{self.amount} ({self.get_split_type_display()})"
+
+
+class UserProfile(models.Model):
+    """Extended user profile details and OTP security management."""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    avatar_color = models.CharField(max_length=20, default='#6366f1')
+    
+    # OTP fields for username/password change security
+    otp_code = models.CharField(max_length=10, blank=True, null=True)
+    otp_purpose = models.CharField(max_length=20, blank=True, null=True) # 'username' or 'password'
+    pending_value = models.CharField(max_length=255, blank=True, null=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+    @classmethod
+    def get_or_create_profile(cls, user):
+        profile, _ = cls.objects.get_or_create(user=user)
+        return profile
+
 

@@ -1,11 +1,11 @@
 {% extends 'finance/base.html' %}
 {% load humanize %}
 
-{% block title %}EMIs - Finance Tracker{% endblock %}
+{% block title %}Monthly EMIs - FinRoll{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Monthly EMIs</h1>
+    <h1 style="display: flex; align-items: center; gap: 0.5rem;"><span style="font-size: 1.5rem;">⚡</span> Monthly EMIs & Subscriptions</h1>
     <div class="page-actions" style="display:flex; align-items:center; gap:12px;">
         <form method="get" action="{% url 'finance:emi_list' %}" style="display:inline-block;">
             <input type="hidden" name="status" value="{{ status_filter }}">

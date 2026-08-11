@@ -206,7 +206,7 @@ class SplitDebtForm(forms.ModelForm):
 
 
 class PartialPaymentForm(forms.Form):
-    """Form for making partial payments on debts/credits."""
+    """Form for making partial payments on debts/credits with remark."""
     PAYMENT_MODE_CHOICES = [
         ('bank', 'Bank Account'),
         ('cash', 'Cash in Hand'),
@@ -228,6 +228,14 @@ class PartialPaymentForm(forms.Form):
         initial='bank',
         label='Account (Bank or Cash)',
         widget=forms.Select(attrs={'class': 'form-input'})
+    )
+    remark = forms.CharField(
+        required=False,
+        label='Remark / Notes (Optional)',
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Enter payment remark or note...'
+        })
     )
 
 
@@ -363,4 +371,45 @@ class TransactionForm(forms.ModelForm):
         choices.append(('__add_new__', '+ Add New Category...'))
 
         self.fields['category'].choices = choices
+
+
+from .models import UserProfile
+
+class UserProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Last Name'}))
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'email@domain.com'}))
+
+    class Meta:
+        model = UserProfile
+        fields = ['phone_number', 'bio', 'avatar_color']
+        widgets = {
+            'phone_number': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Phone Number'}),
+            'bio': forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'About yourself...'}),
+            'avatar_color': forms.TextInput(attrs={'class': 'form-input', 'type': 'color'}),
+        }
+
+
+class AmountAdjustmentForm(forms.Form):
+    """Form for adjusting/offsetting amounts between accounts or debt items."""
+    ADJUSTMENT_TYPE_CHOICES = [
+        ('bank_adjust', 'Bank Balance Adjustment'),
+        ('cash_adjust', 'Cash in Hand Adjustment'),
+        ('settlement_offset', 'Debt & Credit Mutual Offset'),
+    ]
+    adjustment_type = forms.ChoiceField(
+        choices=ADJUSTMENT_TYPE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-input', 'id': 'id_adjustment_type'})
+    )
+    amount = forms.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        min_value=0.01,
+        widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Amount in ₹', 'step': '0.01'})
+    )
+    reason = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'Reason for adjustment / offset'})
+    )
+
 
