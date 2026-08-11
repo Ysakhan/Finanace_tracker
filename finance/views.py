@@ -23,7 +23,7 @@ from .models import AccountBalance, MonthlyEMI, SplitDebt, TransactionHistory, B
 from .forms import (
     AccountBalanceForm, EMIFormWithMonth, SplitDebtForm,
     PartialPaymentForm, TransactionForm, BeneficiaryForm, TransferForm,
-    UserProfileForm, AmountAdjustmentForm
+    UserProfileForm, AmountAdjustmentForm, UserRegistrationForm
 )
 
 
@@ -33,14 +33,15 @@ def register_view(request):
     if request.user.is_authenticated:
         return redirect('finance:dashboard')
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            UserProfile.get_or_create_profile(user)
             login(request, user)
-            messages.success(request, f'Welcome, {user.username}!')
+            messages.success(request, f'Welcome to FinRoll, {user.username}!')
             return redirect('finance:dashboard')
     else:
-        form = UserCreationForm()
+        form = UserRegistrationForm()
     return render(request, 'finance/register.html', {'form': form})
 
 
@@ -2200,6 +2201,103 @@ def transaction_bulk_action(request):
             return response
 
     return redirect('finance:transaction_list')
+
+
+# UNAUTHENTICATED LOGIN CREDENTIAL RECOVERY VIEWS
+
+def forgot_credentials_send_otp(request):
+    """Unauthenticated OTP request for username/password recovery on login page."""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    email = data.get('email', '').strip()
+    purpose = data.get('purpose', 'reset')
+
+    if not email:
+        return JsonResponse({'success': False, 'message': 'Please enter your registered email address.'}, status=400)
+
+    user = User.objects.filter(email__iexact=email).first()
+    if not user:
+        return JsonResponse({'success': False, 'message': 'No account found with this email address.'}, status=400)
+
+    otp = str(random.randint(100000, 999999))
+    profile = UserProfile.get_or_create_profile(user)
+    profile.otp_code = otp
+    profile.otp_purpose = purpose
+    profile.otp_created_at = timezone.now()
+    profile.save()
+
+    if purpose == 'username':
+        subject = "FinRoll Account Recovery - Your Username Information"
+        message = f"Hello,\n\nYour FinRoll account username is: {user.username}\n\nSecurity OTP Code: {otp}\n\n- FinRoll Security Team"
+    else:
+        subject = "FinRoll Password Reset Security OTP"
+        message = f"Hello {user.username},\n\nYour 6-digit Security OTP to reset your FinRoll password is: {otp}\n\nThis code expires in 10 minutes.\n\n- FinRoll Security Team"
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email='FinRoll Security <security@finroll.local>',
+            recipient_list=[email],
+            fail_silently=False
+        )
+    except Exception:
+        pass
+
+    return JsonResponse({
+        'success': True,
+        'message': f'Security OTP code sent to {email}.'
+    })
+
+
+def forgot_credentials_reset(request):
+    """Verifies OTP and sets new password or recovers username on login page."""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    email = data.get('email', '').strip()
+    submitted_otp = data.get('otp_code', '').strip()
+    new_password = data.get('new_password', '').strip()
+
+    user = User.objects.filter(email__iexact=email).first()
+    if not user:
+        return JsonResponse({'success': False, 'message': 'Invalid user account.'}, status=400)
+
+    profile = UserProfile.get_or_create_profile(user)
+    if not profile.otp_code or profile.otp_code != submitted_otp:
+        return JsonResponse({'success': False, 'message': 'Invalid or expired OTP code.'}, status=400)
+
+    if profile.otp_created_at and (timezone.now() - profile.otp_created_at).total_seconds() > 600:
+        return JsonResponse({'success': False, 'message': 'OTP has expired. Please request a new code.'}, status=400)
+
+    if profile.otp_purpose == 'username':
+        msg = f'Account Username recovered: {user.username}'
+    else:
+        if not new_password or len(new_password) < 4:
+            return JsonResponse({'success': False, 'message': 'Password must be at least 4 characters long.'}, status=400)
+        user.set_password(new_password)
+        user.save()
+        msg = 'Password reset successfully! You can now sign in with your new password.'
+
+    # Clear OTP
+    profile.otp_code = None
+    profile.otp_purpose = None
+    profile.otp_created_at = None
+    profile.save()
+
+    return JsonResponse({'success': True, 'message': msg})
+
 
 
 

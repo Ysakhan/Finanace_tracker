@@ -4,36 +4,213 @@
 
 {% block content %}
 <div class="auth-container" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
-    <div class="auth-card" style="background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); padding: 2.5rem; width: 100%; max-width: 440px; box-shadow: var(--shadow-xl);">
-        <div class="auth-header" style="text-align: center; margin-bottom: 2rem;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; font-size: 2rem; font-weight: 900; box-shadow: 0 8px 20px rgba(99,102,241,0.4); margin-bottom: 1rem;">
+    <div class="auth-card" style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); padding: 2.75rem 2.25rem; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.35);">
+        
+        <!-- Premium Logo Header -->
+        <div class="auth-header" style="text-align: center; margin-bottom: 2.25rem;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; font-size: 2.2rem; font-weight: 900; box-shadow: 0 10px 25px rgba(99,102,241,0.5); margin-bottom: 1.25rem; position: relative;">
                 ⚡
+                <span style="position: absolute; inset: -4px; border-radius: 26px; border: 1.5px solid rgba(99,102,241,0.4); pointer-events: none;"></span>
             </div>
-            <h2 style="font-weight: 800; font-size: 1.8rem; background: linear-gradient(135deg, var(--text-heading), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem;">FinRoll</h2>
-            <p style="color: var(--text-muted); font-size: 0.88rem; font-weight: 600;">Smart Bookkeeping, Effortless Tracking</p>
+            <h2 style="font-weight: 900; font-size: 2rem; background: linear-gradient(135deg, #ffffff 30%, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.35rem; letter-spacing: -0.5px;">
+                FinRoll
+            </h2>
+            <p style="color: var(--primary); font-size: 0.88rem; font-weight: 700; letter-spacing: 0.2px;">Smart Bookkeeping, Effortless Tracking</p>
         </div>
 
+        <!-- Login Form -->
         <form method="post" class="auth-form">
             {% csrf_token %}
             {% if form.errors %}
-            <div class="alert alert-danger" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.9rem;">
+            <div class="alert alert-danger" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.9rem;">
                 <p style="margin: 0;">Invalid username or password. Please try again.</p>
             </div>
             {% endif %}
+
             <div class="form-group" style="margin-bottom: 1.25rem;">
                 <label for="id_username" style="font-weight: 600; color: var(--text-heading); display: block; margin-bottom: 0.4rem;">Username</label>
-                <input type="text" name="username" id="id_username" class="form-input" placeholder="Enter your username" required autofocus style="padding: 0.75rem 1rem; font-size: 0.95rem;" />
+                <input type="text" name="username" id="id_username" class="form-input" placeholder="Enter your username" required autofocus style="padding: 0.8rem 1rem; font-size: 0.95rem; border-radius: 12px;" />
             </div>
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label for="id_password" style="font-weight: 600; color: var(--text-heading); display: block; margin-bottom: 0.4rem;">Password</label>
-                <input type="password" name="password" id="id_password" class="form-input" placeholder="Enter your password" required style="padding: 0.75rem 1rem; font-size: 0.95rem;" />
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <label for="id_password" style="font-weight: 600; color: var(--text-heading);">Password</label>
+                </div>
+                <input type="password" name="password" id="id_password" class="form-input" placeholder="Enter your password" required style="padding: 0.8rem 1rem; font-size: 0.95rem; border-radius: 12px;" />
             </div>
-            <button type="submit" class="btn btn-primary btn-block" style="width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 700; border-radius: 12px; background: linear-gradient(135deg, var(--primary), #4f46e5); color: #fff; border: none; cursor: pointer;">Sign In to FinRoll</button>
+
+            <!-- Forgot Credentials Option -->
+            <div style="text-align: right; margin-bottom: 1.5rem;">
+                <button type="button" onclick="openLoginRecoveryModal()" style="background: none; border: none; color: var(--primary); font-size: 0.88rem; font-weight: 600; cursor: pointer; text-decoration: underline;">
+                    🔑 Forgot Username or Password?
+                </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="width: 100%; padding: 0.9rem; font-size: 1rem; font-weight: 800; border-radius: 14px; background: linear-gradient(135deg, var(--primary), #4f46e5); color: #fff; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(99,102,241,0.35);">
+                Sign In to FinRoll
+            </button>
         </form>
 
+        <!-- Register Link -->
         <div class="auth-footer" style="text-align: center; margin-top: 1.75rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
             <p style="color: var(--text-muted); font-size: 0.9rem;">Don't have an account? <a href="{% url 'finance:register' %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Register here</a></p>
         </div>
     </div>
 </div>
+
+<!-- Login Recovery OTP Modal -->
+<div id="loginRecoveryModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 440px; padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-xl);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+            <h3 style="font-weight: 800; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                <span>🔑</span> Reset Username / Password
+            </h3>
+            <button onclick="closeLoginRecoveryModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        </div>
+
+        <div id="recStep1">
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Select what you need to recover and enter your registered email address to receive a 6-digit OTP code.</p>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">I want to reset / recover:</label>
+                <select id="recPurpose" class="form-input">
+                    <option value="password">Reset Password</option>
+                    <option value="username">Recover Username</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">Registered Email Address</label>
+                <input type="email" id="recEmail" class="form-input" placeholder="name@domain.com" required />
+            </div>
+
+            <div id="recSendMsg" style="margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+            <button type="button" onclick="requestLoginOtp()" id="btnRecSend" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 0.75rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), #4f46e5);">
+                Send Security OTP Code
+            </button>
+        </div>
+
+        <div id="recStep2" style="display: none;">
+            <div class="alert alert-info" style="margin-bottom: 1rem; font-size: 0.9rem; padding: 0.75rem; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 8px;">
+                📩 6-digit Security OTP has been sent to your email.
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">Enter 6-Digit OTP</label>
+                <input type="text" id="recOtpCode" maxlength="6" class="form-input" style="letter-spacing: 0.35rem; font-size: 1.25rem; text-align: center; font-weight: 800;" placeholder="123456" />
+            </div>
+
+            <div id="recNewPasswordGroup" class="form-group" style="margin-bottom: 1.25rem;">
+                <label style="font-weight: 600; color: var(--text-heading);">New Password</label>
+                <input type="password" id="recNewPassword" class="form-input" placeholder="Enter new password" />
+            </div>
+
+            <div id="recVerifyMsg" style="margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+            <button type="button" onclick="submitLoginReset()" id="btnRecVerify" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 0.75rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), #4f46e5);">
+                Verify & Complete Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openLoginRecoveryModal() {
+    document.getElementById('loginRecoveryModal').style.display = 'flex';
+    document.getElementById('recStep1').style.display = 'block';
+    document.getElementById('recStep2').style.display = 'none';
+    document.getElementById('recSendMsg').innerHTML = '';
+    document.getElementById('recVerifyMsg').innerHTML = '';
+    document.getElementById('recEmail').value = '';
+    document.getElementById('recOtpCode').value = '';
+    document.getElementById('recNewPassword').value = '';
+}
+
+function closeLoginRecoveryModal() {
+    document.getElementById('loginRecoveryModal').style.display = 'none';
+}
+
+function requestLoginOtp() {
+    const email = document.getElementById('recEmail').value.trim();
+    const purpose = document.getElementById('recPurpose').value;
+    if (!email) {
+        document.getElementById('recSendMsg').innerHTML = '<span style="color:#ef4444;">Please enter your email.</span>';
+        return;
+    }
+    const btn = document.getElementById('btnRecSend');
+    btn.disabled = true;
+    btn.innerText = 'Sending OTP...';
+
+    fetch("{% url 'finance:forgot_credentials_send_otp' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ email: email, purpose: purpose })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerText = 'Send Security OTP Code';
+        if (data.success) {
+            document.getElementById('recStep1').style.display = 'none';
+            document.getElementById('recStep2').style.display = 'block';
+            if (purpose === 'username') {
+                document.getElementById('recNewPasswordGroup').style.display = 'none';
+            } else {
+                document.getElementById('recNewPasswordGroup').style.display = 'block';
+            }
+        } else {
+            document.getElementById('recSendMsg').innerHTML = `<span style="color:#ef4444;">${data.message}</span>`;
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerText = 'Send Security OTP Code';
+        document.getElementById('recSendMsg').innerHTML = '<span style="color:#ef4444;">Error sending request.</span>';
+    });
+}
+
+function submitLoginReset() {
+    const email = document.getElementById('recEmail').value.trim();
+    const otp = document.getElementById('recOtpCode').value.trim();
+    const newPass = document.getElementById('recNewPassword').value.trim();
+
+    if (!otp || otp.length !== 6) {
+        document.getElementById('recVerifyMsg').innerHTML = '<span style="color:#ef4444;">Enter valid 6-digit OTP code.</span>';
+        return;
+    }
+
+    const btn = document.getElementById('btnRecVerify');
+    btn.disabled = true;
+    btn.innerText = 'Verifying...';
+
+    fetch("{% url 'finance:forgot_credentials_reset' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ email: email, otp_code: otp, new_password: newPass })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerText = 'Verify & Complete Reset';
+        if (data.success) {
+            alert(data.message);
+            closeLoginRecoveryModal();
+        } else {
+            document.getElementById('recVerifyMsg').innerHTML = `<span style="color:#ef4444;">${data.message}</span>`;
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerText = 'Verify & Complete Reset';
+        document.getElementById('recVerifyMsg').innerHTML = '<span style="color:#ef4444;">Error completing request.</span>';
+    });
+}
+</script>
 {% endblock %}

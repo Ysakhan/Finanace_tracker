@@ -55,11 +55,10 @@
     {% endfor %}
     {% endif %}
 
-    <!-- Navigation (Displayed after login only) -->
-    {% if user.is_authenticated %}
+    <!-- Navigation Header -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="{% url 'finance:dashboard' %}" class="nav-brand" style="text-decoration: none;">
+            <a href="{% if user.is_authenticated %}{% url 'finance:dashboard' %}{% else %}{% url 'finance:login' %}{% endif %}" class="nav-brand" style="text-decoration: none;">
                 <span class="brand-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(99,102,241,0.4);">
                     ⚡
                 </span>
@@ -68,6 +67,8 @@
                     <span style="display: block; font-size: 0.68rem; color: var(--text-muted); font-weight: 600; letter-spacing: -0.2px; margin-top: -3px;">Smart Bookkeeping, Effortless Tracking</span>
                 </div>
             </a>
+
+            {% if user.is_authenticated %}
             <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">
                 <span></span><span></span><span></span>
             </button>
@@ -111,9 +112,9 @@
                 </a>
                 <a href="{% url 'finance:logout' %}" class="nav-link nav-logout">Logout</a>
             </div>
+            {% endif %}
         </div>
     </nav>
-    {% endif %}
 
     <!-- Main Content -->
     <main class="main-content">
@@ -125,12 +126,14 @@
         <p style="margin: 0;">&copy; 2026 Vyvron Technologies. All rights reserved.</p>
     </footer>
 
-    <!-- Floating Add Button -->
+    <!-- Floating Add Button (Only when authenticated) -->
+    {% if user.is_authenticated %}
     <button class="fab" onclick="document.getElementById('addModal').classList.add('active')" title="Quick Add">
         <span>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </span>
     </button>
+    {% endif %}
 
     <!-- Add Modal -->
     <div class="modal-overlay" id="addModal">

@@ -1,6 +1,23 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from .models import AccountBalance, MonthlyEMI, SplitDebt, TransactionHistory
 from datetime import date
+
+
+class UserRegistrationForm(UserCreationForm):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Enter your email address for security & recovery',
+            'required': True
+        })
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
 
 
 class AccountBalanceForm(forms.ModelForm):

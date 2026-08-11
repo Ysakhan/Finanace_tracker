@@ -9,6 +9,8 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='finance/login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('forgot-credentials/send-otp/', views.forgot_credentials_send_otp, name='forgot_credentials_send_otp'),
+    path('forgot-credentials/reset/', views.forgot_credentials_reset, name='forgot_credentials_reset'),
 
     # Dashboard
     path('', views.dashboard, name='dashboard'),
