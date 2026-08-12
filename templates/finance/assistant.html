@@ -3,47 +3,58 @@
 {% block title %}Finance Assistant - Finance Tracker{% endblock %}
 
 {% block content %}
-<div class="page-header" style="display: flex; align-items: center; gap: 0.75rem;">
-    <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: var(--radius-pill); background: rgba(79, 140, 255, 0.15); border: 1px solid rgba(79, 140, 255, 0.3); color: var(--accent-blue);">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="4"/><line x1="9" y1="13" x2="9.01" y2="13"/><line x1="15" y1="13" x2="15.01" y2="13"/><path d="M10 17s1 1 2 1 2-1 2-1"/></svg>
+<div class="page-header" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+    <span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #4f46e5, #06b6d4); color: #ffffff; box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="4"/><line x1="9" y1="13" x2="9.01" y2="13"/><line x1="15" y1="13" x2="15.01" y2="13"/><path d="M10 17s1 1 2 1 2-1 2-1"/></svg>
     </span>
     <div>
-        <h1>Finance Companion</h1>
-        <p class="text-muted">Ask me anything about your finances</p>
+<div class="page-header" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+    <span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #4f46e5, #06b6d4); color: #ffffff; box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="4"/><line x1="9" y1="13" x2="9.01" y2="13"/><line x1="15" y1="13" x2="15.01" y2="13"/><path d="M10 17s1 1 2 1 2-1 2-1"/></svg>
+    </span>
+    <div>
+        <h1 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.2rem;">AI Financial Companion</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">Smart balance tracking, EMI assistance & instant financial insights</p>
     </div>
 </div>
 
-<div class="chat-container">
+<div class="chat-container" style="border-radius: 20px; box-shadow: var(--shadow-md);">
     <div class="chat-messages" id="chatMessages">
         <div class="chat-message assistant">
-            <div class="chat-avatar">
+            <div class="chat-avatar" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); color: #fff; border: none;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="4"/><line x1="9" y1="13" x2="9.01" y2="13"/><line x1="15" y1="13" x2="15.01" y2="13"/><path d="M10 17s1 1 2 1 2-1 2-1"/></svg>
             </div>
-            <div class="chat-bubble">
-                Hello! I'm your Finance Companion. I can help you with:
-                <br><br>
-                - <strong>"Financial health check"</strong> — Automated weekly spending insights & health score<br>
-                - <strong>"All details of EMI and loans"</strong> — Full EMI & loan history across all months<br>
-                - <strong>"This month EMI"</strong> — See EMIs for current month only<br>
-                - <strong>"All debts and credits"</strong> — View all debts & credits (active & settled)<br>
-                - <strong>"What's my balance?"</strong> — Check bank balance & liquidity<br>
-                - <strong>"Can I afford X?"</strong> — Spending advice<br>
-                - <strong>"What should I pay first?"</strong> — Payment priorities<br>
-                - <strong>"Full financial summary"</strong> — Complete financial overview across all months
+            <div class="chat-bubble" style="border-left: 4px solid #4f46e5;">
+                <strong>Welcome! I am your AI Financial Companion.</strong>
+                <p style="margin-top: 0.5rem; margin-bottom: 0.75rem; color: var(--text-secondary);">Click any quick prompt below or type your question:</p>
+                <div style="display: grid; gap: 0.5rem;">
+                    <div>💳 <strong>"What's my balance?"</strong> — Check bank, cash & card availability</div>
+                    <div>📊 <strong>"This month EMI"</strong> — Active installments for current month</div>
+                    <div>📝 <strong>"All debts and credits"</strong> — Track who owes who</div>
+                    <div>📈 <strong>"Full financial summary"</strong> — Complete financial overview</div>
+                </div>
             </div>
         </div>
     </div>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; padding: 0 0.5rem;">
-        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('Financial health check')">Financial Health Check</button>
-        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('This month EMI')">This Month EMIs</button>
-        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('What\'s my balance?')">My Balance</button>
-        <button type="button" class="btn btn-outline btn-xs" style="border-radius: var(--radius-pill);" onclick="sendPrompt('Full financial summary')">Full Summary</button>
+    
+    <!-- Quick Prompts Bar -->
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; padding: 0.85rem 1.25rem; background: var(--bg-primary); border-top: 1px solid var(--border-color);">
+        <button type="button" class="btn btn-outline btn-xs" style="border-radius: 30px; font-weight: 700; padding: 8px 14px;" onclick="sendPrompt('This month EMI')">
+            💳 This Month EMIs
+        </button>
+        <button type="button" class="btn btn-outline btn-xs" style="border-radius: 30px; font-weight: 700; padding: 8px 14px;" onclick="sendPrompt('What\'s my balance?')">
+            🏦 My Balance
+        </button>
+        <button type="button" class="btn btn-outline btn-xs" style="border-radius: 30px; font-weight: 700; padding: 8px 14px;" onclick="sendPrompt('Full financial summary')">
+            📊 Full Summary
+        </button>
     </div>
+
     <div class="chat-input-area">
         <form id="chatForm" class="chat-form">
-            <input type="text" id="chatInput" class="chat-input" placeholder="Ask about your finances..." autocomplete="off">
-            <button type="submit" class="btn btn-primary chat-send">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <input type="text" id="chatInput" class="chat-input" placeholder="Ask about your finances..." autocomplete="off" style="border-radius: 14px;">
+            <button type="submit" class="btn btn-primary chat-send" style="border-radius: 14px; background: linear-gradient(135deg, #4f46e5, #06b6d4); border: none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
         </form>
     </div>

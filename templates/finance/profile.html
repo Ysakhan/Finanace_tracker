@@ -51,6 +51,17 @@
                 <label style="font-weight: 600; color: var(--text-heading);">Bio / Notes</label>
                 {{ form.bio }}
             </div>
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label style="font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                    <span>🎨</span> App Display Theme
+                </label>
+                <select id="themeSelect" onchange="setTheme(this.value)" class="form-input" style="width: 100%; border-radius: 10px; font-weight: 600; padding: 0.65rem 0.85rem;">
+                    <option value="light">☀️ Light Mode (Default)</option>
+                    <option value="dark">🌙 Dark Mode</option>
+                </select>
+                <small style="color: var(--text-muted); margin-top: 0.35rem; display: block; font-size: 0.82rem;">Select your preferred theme. Changes apply instantly across all pages.</small>
+            </div>
+
             <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 10px; padding: 0.75rem 1.25rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), #4f46e5); color: #fff; border: none; cursor: pointer;">
                 Save Profile Details
             </button>

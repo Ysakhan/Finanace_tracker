@@ -1344,26 +1344,14 @@ def assistant_api(request):
     has_debt_keyword = any(w in user_msg for w in ['debt', 'debts', 'owe', 'owes', 'borrow', 'borrowed'])
     has_credit_keyword = any(w in user_msg for w in ['credit', 'credits', 'collect', 'lend', 'lent'])
     has_balance_keyword = any(w in user_msg for w in ['balance', 'bank', 'cash', 'money', 'how much'])
-    has_summary_keyword = any(w in user_msg for w in ['summary', 'overview', 'report', 'all details', 'details', 'everything', 'status'])
+    has_summary_keyword = any(w in user_msg for w in ['summary', 'overview', 'report', 'all details', 'details', 'everything', 'status', 'health', 'insights'])
     has_afford_keyword = any(w in user_msg for w in ['afford', 'buy', 'purchase', 'spend'])
     has_priority_keyword = any(w in user_msg for w in ['pay first', 'priority', 'suggest', 'advice', 'recommend'])
-    has_health_keyword = any(w in user_msg for w in ['health', 'insight', 'insights', 'analysis', 'how am i doing', 'score', 'pace', 'health check'])
 
     resp = ""
 
-    # 0. Financial Health Check & Insights
-    if has_health_keyword:
-        h = compute_financial_health_insights(request.user)
-        resp = f"FINANCIAL HEALTH CHECK & INSIGHTS\n{'='*45}\n\n"
-        resp += f"Health Score: {h['score']}/100 ({h['rating']})\n"
-        resp += f"Liquidity Buffer: Rs.{h['liquidity']:,.2f}\n"
-        resp += f"This Week Spending: Rs.{h['this_week_total']:,.2f}\n\n"
-        resp += "SMART INSIGHTS:\n"
-        for item in h['insights']:
-            resp += f"• {item}\n"
-
     # 1. Combined request (e.g., "all details of emi and loans and debts credits" or summary)
-    elif (has_emi_keyword and (has_debt_keyword or has_credit_keyword)) or (has_summary_keyword and not is_this_month):
+    if (has_emi_keyword and (has_debt_keyword or has_credit_keyword)) or (has_summary_keyword and not is_this_month):
         if is_this_month and not is_all_explicit:
             resp = f"FINANCIAL SUMMARY — {current_month} (This Month Only)\n{'='*45}\n\n"
             resp += f"BANK BALANCE: Rs.{balance.bank_balance}\nEFFECTIVE LIQUIDITY: Rs.{liquidity}\n\n"

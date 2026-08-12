@@ -31,7 +31,6 @@ get_pages = [
     ('/balance/update/', 'balance form'),
     ('/transactions/', 'transactions'),
     ('/transactions/add/', 'txn add form'),
-    ('/assistant/', 'AI assistant'),
     ('/export/', 'export page'),
     ('/export/text/', 'export text'),
     ('/export/csv/', 'export csv'),
@@ -126,12 +125,7 @@ print("  [OK] Profile Email Saved & User Model Updated")
 
 res_otp = client.post('/profile/send-otp/', data=json.dumps({'purpose': 'username', 'target_value': 'newusername'}), content_type='application/json')
 assert res_otp.status_code == 200 and res_otp.json().get('success'), "OTP Generation failed!"
-print("  [OK] Profile Security OTP Generated & Sent Exclusively via Email")
 
-print("\n=== VERIFYING FINANCIAL HEALTH ASSISTANT API ===")
-res_health = client.post('/assistant/api/', data=json.dumps({'message': 'financial health check'}), content_type='application/json')
-assert res_health.status_code == 200 and 'Health Score' in res_health.json().get('response', ''), "Assistant Health Check API failed!"
-print("  [OK] Assistant Health Check API returns 200 and Health Score")
 
 print()
 if all_ok:

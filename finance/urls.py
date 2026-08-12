@@ -59,9 +59,7 @@ urlpatterns = [
     # Notifications
     path('dismiss-notification/', views.dismiss_notification, name='dismiss_notification'),
 
-    # AI Assistant
-    path('assistant/', views.assistant, name='assistant'),
-    path('assistant/api/', views.assistant_api, name='assistant_api'),
+
 
     # Export
     path('export/', views.export_page, name='export_page'),

@@ -22,8 +22,39 @@ function dismissNotification() {
     }
 }
 
-// Auto-dismiss notifications after 8 seconds
+// Theme Management Logic (Default: Light Theme)
+function setTheme(theme) {
+    const targetTheme = (theme === 'dark') ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', targetTheme);
+    localStorage.setItem('finroll_theme', targetTheme);
+    
+    // Sync all slide switch checkboxes
+    document.querySelectorAll('.themeToggleCheckbox').forEach(cb => {
+        cb.checked = (targetTheme === 'dark');
+    });
+
+    // Toggle icons inside slide knob
+    document.querySelectorAll('.icon-sun').forEach(el => el.style.display = (targetTheme === 'dark') ? 'none' : 'block');
+    document.querySelectorAll('.icon-moon').forEach(el => el.style.display = (targetTheme === 'dark') ? 'block' : 'none');
+
+    const themeSelect = document.getElementById('themeSelect');
+    if (themeSelect) themeSelect.value = targetTheme;
+}
+
+function toggleThemeFromCheckbox(isDark) {
+    setTheme(isDark ? 'dark' : 'light');
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
+// Auto-dismiss notifications & sync light/dark theme
 document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('finroll_theme') || 'light';
+    setTheme(savedTheme);
+
     const banners = document.querySelectorAll('.notification-banner');
     banners.forEach((banner, i) => {
         setTimeout(() => {
