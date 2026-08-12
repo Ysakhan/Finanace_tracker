@@ -18,3 +18,23 @@ class NoCacheAfterLogoutMiddleware:
             response['Pragma'] = 'no-cache'
             response['Expires'] = '0'
         return response
+
+
+class UserFriendlyExceptionMiddleware:
+    """Catches unhandled exceptions and presents human-readable error pages with solutions instead of raw code tracebacks."""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
+    def process_exception(self, request, exception):
+        from django.shortcuts import render
+        return render(request, '500.html', {
+            'error_title': 'An Unexpected Error Occurred',
+            'error_message': 'The system encountered an issue while processing your request. No technical code traceback will be shown.',
+            'error_detail': str(exception),
+            'status_code': 500,
+        }, status=500)
+

@@ -1,25 +1,38 @@
 {% extends 'finance/base.html' %}
 
-{% block title %}Security & Access Control - Finance Tracker{% endblock %}
+{% block title %}Access Notice - FinRoll{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: center; align-items: center; min-height: 65vh; padding: 2rem 1rem;">
-    <div style="max-width: 550px; width: 100%; text-align: center; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 3rem 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4);">
-        <div style="font-size: 4rem; margin-bottom: 1rem; line-height: 1;">🛡️</div>
-        <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-size: 0.9rem; padding: 0.4rem 0.8rem; margin-bottom: 1rem; display: inline-block;">
-            CSRF / Permission Notice (403)
+<div style="display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 2rem 1rem;">
+    <div style="max-width: 580px; width: 100%; text-align: center; background: rgba(24, 28, 43, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 3rem 2.25rem; box-shadow: 0 25px 40px rgba(0,0,0,0.5);">
+        <div style="font-size: 4.5rem; margin-bottom: 0.75rem; line-height: 1;">🛡️</div>
+        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 0.88rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1rem; display: inline-block; border: 1px solid rgba(245, 158, 11, 0.3);">
+            Error 403 — Security Verification
         </span>
-        <h1 style="font-size: 1.8rem; font-weight: 700; color: #f8fafc; margin: 0.75rem 0;">
-            Security Session Expired or Action Forbidden
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-heading); margin: 0.5rem 0 1rem 0;">
+            Security Token Expired or Access Restricted
         </h1>
-        <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 2rem; line-height: 1.6;">
-            {{ exception|default:"Your session or security CSRF verification expired. Please refresh the page or sign in again to continue." }}
+        <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 1.75rem; line-height: 1.6;">
+            {% if error_message %}{{ error_message }}{% else %}Your security token or login session has expired. This protects your account from unauthorized requests.{% endif %}
         </p>
+
+        <!-- Solution Box -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; text-align: left;">
+            <h4 style="color: #818cf8; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🔒</span> Recommended Solutions:
+            </h4>
+            <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; padding-left: 1.25rem; margin: 0;">
+                <li>Refresh the webpage to renew your security CSRF token.</li>
+                <li>If your session logged out, click <strong>Sign In</strong> to log back in safely.</li>
+                <li>Return to the Dashboard to continue bookkeeping.</li>
+            </ul>
+        </div>
+
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="{% url 'finance:login' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+            <a href="{% url 'finance:login' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-weight: 700; text-decoration: none; border-radius: 12px;">
                 🔑 Sign In / Refresh Session
             </a>
-            <a href="{% url 'finance:dashboard' %}" class="btn btn-outline" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+            <a href="{% url 'finance:dashboard' %}" class="btn btn-outline" style="padding: 0.75rem 1.5rem; font-weight: 600; text-decoration: none; border-radius: 12px;">
                 🏠 Dashboard
             </a>
         </div>

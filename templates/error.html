@@ -1,32 +1,39 @@
 {% extends 'finance/base.html' %}
 
-{% block title %}{{ error_title|default:"Page Not Set" }} - Finance Tracker{% endblock %}
+{% block title %}{{ error_title|default:"Application Notice" }} - FinRoll{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: center; align-items: center; min-height: 65vh; padding: 2rem 1rem;">
-    <div style="max-width: 550px; width: 100%; text-align: center; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 3rem 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4);">
-        <div style="font-size: 4rem; margin-bottom: 1rem; line-height: 1;">
+<div style="display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 2rem 1rem;">
+    <div style="max-width: 580px; width: 100%; text-align: center; background: rgba(24, 28, 43, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 3rem 2.25rem; box-shadow: 0 25px 40px rgba(0,0,0,0.5);">
+        <div style="font-size: 4.5rem; margin-bottom: 0.75rem; line-height: 1;">
             {% if status_code == 404 %}🔍{% elif status_code == 403 %}🛡️{% else %}⚠️{% endif %}
         </div>
-        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 0.9rem; padding: 0.4rem 0.8rem; margin-bottom: 1rem; display: inline-block;">
-            Error {{ status_code|default:"404" }}
+        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 0.88rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1rem; display: inline-block; border: 1px solid rgba(239, 68, 68, 0.3);">
+            Notice Code {{ status_code|default:"400" }}
         </span>
-        <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary, #f8fafc); margin: 0.75rem 0;">
-            {{ error_title|default:"Page Not Set" }}
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-heading); margin: 0.5rem 0 1rem 0;">
+            {{ error_title|default:"Notice" }}
         </h1>
-        <p style="color: var(--text-secondary, #94a3b8); font-size: 1rem; margin-bottom: 2rem; line-height: 1.6;">
-            {{ error_message|default:"The page or link you requested is not configured or does not exist." }}
+        <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 1.75rem; line-height: 1.6;">
+            {{ error_message|default:"The action could not be completed as requested." }}
         </p>
-        {% if error_detail %}
-        <div style="background: rgba(0, 0, 0, 0.25); border-radius: 8px; padding: 0.85rem; font-family: monospace; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 2rem; text-align: left; word-break: break-word;">
-            {{ error_detail }}
+
+        <!-- Solution Box -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; text-align: left;">
+            <h4 style="color: #818cf8; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>💡</span> Suggested Next Steps:
+            </h4>
+            <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; padding-left: 1.25rem; margin: 0;">
+                <li>Verify your form inputs (amounts, payment mode, or dates).</li>
+                <li>Go back to the previous screen or return to the main dashboard.</li>
+            </ul>
         </div>
-        {% endif %}
+
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="{% url 'finance:dashboard' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+            <a href="{% url 'finance:dashboard' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-weight: 700; text-decoration: none; border-radius: 12px;">
                 🏠 Return to Dashboard
             </a>
-            <a href="javascript:history.back()" class="btn btn-outline" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+            <a href="javascript:history.back()" class="btn btn-outline" style="padding: 0.75rem 1.5rem; font-weight: 600; text-decoration: none; border-radius: 12px;">
                 ⬅ Go Back
             </a>
         </div>

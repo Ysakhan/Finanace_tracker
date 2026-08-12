@@ -1986,7 +1986,6 @@ def custom_handler400(request, exception=None):
 @login_required
 def profile_view(request):
     profile = UserProfile.get_or_create_profile(request.user)
-    has_email = bool(request.user.email and request.user.email.strip())
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=profile)
@@ -1996,19 +1995,25 @@ def profile_view(request):
             prof.save()
 
             # Update User email, first_name, last_name
-            request.user.email = form.cleaned_data.get('email', '').strip()
+            new_email = form.cleaned_data.get('email', '').strip()
+            request.user.email = new_email
             request.user.first_name = form.cleaned_data.get('first_name', '').strip()
             request.user.last_name = form.cleaned_data.get('last_name', '').strip()
             request.user.save()
+            request.user.refresh_from_db()
 
             messages.success(request, 'Profile details updated successfully!')
             return redirect('finance:profile')
+        else:
+            messages.error(request, 'Could not save profile details. Please fix form errors below.')
     else:
         form = UserProfileForm(instance=profile, initial={
             'email': request.user.email,
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
         })
+
+    has_email = bool(request.user.email and request.user.email.strip())
 
     return render(request, 'finance/profile.html', {
         'form': form,
@@ -2055,20 +2060,25 @@ def send_profile_otp(request):
     subject = f"FinRoll Security OTP for {purpose.title()} Change"
     message = f"Hello {request.user.username},\n\nYour 6-digit Security OTP to update your {purpose} is: {otp}\n\nThis OTP will expire in 10 minutes.\n\nIf you did not request this, please secure your FinRoll account immediately.\n\n- FinRoll Security Team"
 
+    from django.conf import settings
+    is_smtp = (settings.EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend')
+
     try:
         send_mail(
             subject=subject,
             message=message,
-            from_email='FinRoll Security <security@finroll.local>',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[request.user.email],
             fail_silently=False
         )
-        return JsonResponse({'success': True, 'message': f'OTP sent successfully to {request.user.email}'})
-    except Exception as e:
-        # Console backend fallback message
         return JsonResponse({
             'success': True,
-            'message': f'OTP generated ({otp}) and sent to {request.user.email}.'
+            'message': f'A 6-digit Security OTP code has been sent to {request.user.email}. Please check your email inbox (and Spam folder).'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Failed to send OTP email to {request.user.email}. Please verify your email settings.'
         })
 
 
@@ -2239,21 +2249,26 @@ def forgot_credentials_send_otp(request):
         subject = "FinRoll Password Reset Security OTP"
         message = f"Hello {user.username},\n\nYour 6-digit Security OTP to reset your FinRoll password is: {otp}\n\nThis code expires in 10 minutes.\n\n- FinRoll Security Team"
 
+    from django.conf import settings
+    is_smtp = (settings.EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend')
+
     try:
         send_mail(
             subject=subject,
             message=message,
-            from_email='FinRoll Security <security@finroll.local>',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
             fail_silently=False
         )
-    except Exception:
-        pass
-
-    return JsonResponse({
-        'success': True,
-        'message': f'Security OTP code sent to {email}.'
-    })
+        return JsonResponse({
+            'success': True,
+            'message': f'A 6-digit Security OTP code has been sent to {email}. Please check your email inbox (and Spam folder).'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Failed to send OTP email to {email}. Please verify your email settings.'
+        })
 
 
 def forgot_credentials_reset(request):

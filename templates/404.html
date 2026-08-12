@@ -1,25 +1,38 @@
 {% extends 'finance/base.html' %}
 
-{% block title %}Page Not Set - 404 - Finance Tracker{% endblock %}
+{% block title %}Page Not Found - FinRoll{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: center; align-items: center; min-height: 65vh; padding: 2rem 1rem;">
-    <div style="max-width: 550px; width: 100%; text-align: center; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 3rem 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4);">
-        <div style="font-size: 4rem; margin-bottom: 1rem; line-height: 1;">🔍</div>
-        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 0.9rem; padding: 0.4rem 0.8rem; margin-bottom: 1rem; display: inline-block;">
-            Error 404
+<div style="display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 2rem 1rem;">
+    <div style="max-width: 580px; width: 100%; text-align: center; background: rgba(24, 28, 43, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 3rem 2.25rem; box-shadow: 0 25px 40px rgba(0,0,0,0.5);">
+        <div style="font-size: 4.5rem; margin-bottom: 0.75rem; line-height: 1;">🔍</div>
+        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 0.88rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1rem; display: inline-block; border: 1px solid rgba(239, 68, 68, 0.3);">
+            Error 404 — Page Not Found
         </span>
-        <h1 style="font-size: 1.8rem; font-weight: 700; color: #f8fafc; margin: 0.75rem 0;">
-            Page Not Set
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-heading); margin: 0.5rem 0 1rem 0;">
+            The Page You Are Looking For Does Not Exist
         </h1>
-        <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 2rem; line-height: 1.6;">
-            The page or link you requested is not set, invalid, or has been moved.
+        <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 1.75rem; line-height: 1.6;">
+            We couldn't find the page or resource you requested. It might have been moved, deleted, or the URL address was typed incorrectly.
         </p>
+
+        <!-- Solution Box -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; text-align: left;">
+            <h4 style="color: #818cf8; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>💡</span> Recommended Solutions:
+            </h4>
+            <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; padding-left: 1.25rem; margin: 0;">
+                <li>Check the address in your browser for typing mistakes.</li>
+                <li>Use the top navigation bar to access Dashboard, History, or Profile.</li>
+                <li>Click <strong>Return to Dashboard</strong> below to resume tracking.</li>
+            </ul>
+        </div>
+
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="{% url 'finance:dashboard' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+            <a href="{% url 'finance:dashboard' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-weight: 700; text-decoration: none; border-radius: 12px;">
                 🏠 Return to Dashboard
             </a>
-            <a href="javascript:history.back()" class="btn btn-outline" style="padding: 0.75rem 1.5rem; text-decoration: none;">
+            <a href="javascript:history.back()" class="btn btn-outline" style="padding: 0.75rem 1.5rem; font-weight: 600; text-decoration: none; border-radius: 12px;">
                 ⬅ Go Back
             </a>
         </div>

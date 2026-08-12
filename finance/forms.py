@@ -396,6 +396,7 @@ class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'First Name'}))
     last_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Last Name'}))
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'email@domain.com'}))
+    avatar_color = forms.CharField(max_length=20, required=False, initial='#6366f1', widget=forms.TextInput(attrs={'class': 'form-input', 'type': 'color'}))
 
     class Meta:
         model = UserProfile
@@ -403,7 +404,6 @@ class UserProfileForm(forms.ModelForm):
         widgets = {
             'phone_number': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Phone Number'}),
             'bio': forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'About yourself...'}),
-            'avatar_color': forms.TextInput(attrs={'class': 'form-input', 'type': 'color'}),
         }
 
 

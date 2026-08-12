@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'finance.middleware.NoCacheAfterLogoutMiddleware',
+    'finance.middleware.UserFriendlyExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'finance_tracker.urls'
@@ -110,15 +111,20 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email Configuration (Console backend for local development)
-# Change to SMTP for production
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+# Email Configuration (Real Gmail SMTP Sending)
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'finrollwebapp@gmail.com').strip()
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS', 'nbkrqtwhxyhdwgyi').strip()
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com').strip()
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS', '')
-DEFAULT_FROM_EMAIL = 'Finance Tracker <noreply@financetracker.local>'
+
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    DEFAULT_FROM_EMAIL = f'FinRoll Security <{EMAIL_HOST_USER}>'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'FinRoll Security <noreply@finroll.local>'
+
 
 # Message tags for Bootstrap-style notifications
 MESSAGE_TAGS = {

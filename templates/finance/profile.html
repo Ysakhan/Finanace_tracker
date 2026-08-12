@@ -110,11 +110,11 @@
         </div>
 
         <div id="otpStep2" style="display: none;">
-            <div class="alert alert-info" style="margin-bottom: 1rem; font-size: 0.9rem; padding: 0.75rem;">
-                📩 6-digit OTP code has been sent to <strong>{{ user.email }}</strong>
+            <div class="alert alert-info" style="margin-bottom: 1.25rem; font-size: 0.95rem; padding: 1rem; border-radius: 10px; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); color: var(--text-heading);">
+                📩 A 6-digit Security OTP code has been sent to <strong>{{ user.email }}</strong>. Please open your Email Inbox (and Spam folder) to get your code.
             </div>
             <div class="form-group" style="margin-bottom: 1.25rem;">
-                <label style="font-weight: 600; color: var(--text-heading);">Enter 6-Digit OTP</label>
+                <label style="font-weight: 600; color: var(--text-heading);">Enter 6-Digit OTP from Email</label>
                 <input type="text" id="otpCodeInput" maxlength="6" class="form-input" style="letter-spacing: 0.35rem; font-size: 1.25rem; text-align: center; font-weight: 800;" placeholder="123456" />
             </div>
             <div id="otpVerifyMsg" style="margin-bottom: 1rem; font-size: 0.9rem;"></div>
@@ -130,12 +130,16 @@ let currentPurpose = '';
 
 function openOtpModal(purpose) {
     currentPurpose = purpose;
-    const hasEmail = {% if has_email %}true{% else %}false{% endif %};
+    const emailInput = document.querySelector('input[name="email"]');
+    const inputVal = emailInput ? emailInput.value.trim() : '';
+    const hasEmail = {% if has_email %}true{% else %}false{% endif %} || Boolean(inputVal);
     if (!hasEmail) {
-        alert('Please add and save your email address first in your profile before requesting an OTP!');
+        alert('Please enter and save your email address in your profile before requesting an OTP!');
         return;
     }
-    document.getElementById('otpModal').style.display = 'flex';
+    const modal = document.getElementById('otpModal');
+    modal.style.display = 'flex';
+    modal.classList.add('active');
     document.getElementById('otpStep1').style.display = 'block';
     document.getElementById('otpStep2').style.display = 'none';
     document.getElementById('otpSendMsg').innerHTML = '';
@@ -144,13 +148,13 @@ function openOtpModal(purpose) {
 
     if (purpose === 'username') {
         document.getElementById('otpModalTitle').innerText = 'Change Username';
-        document.getElementById('otpPromptText').innerText = 'Enter your new username below. A 6-digit Security OTP will be sent to your email.';
+        document.getElementById('otpPromptText').innerText = 'Enter your new username below. A 6-digit Security OTP will be sent to your email inbox.';
         document.getElementById('targetInputLabel').innerText = 'New Username';
         document.getElementById('targetInputValue').type = 'text';
         document.getElementById('targetInputValue').placeholder = 'Enter new username';
     } else {
         document.getElementById('otpModalTitle').innerText = 'Change Password';
-        document.getElementById('otpPromptText').innerText = 'Enter your new password below. A 6-digit Security OTP will be sent to your email.';
+        document.getElementById('otpPromptText').innerText = 'Enter your new password below. A 6-digit Security OTP will be sent to your email inbox.';
         document.getElementById('targetInputLabel').innerText = 'New Password';
         document.getElementById('targetInputValue').type = 'password';
         document.getElementById('targetInputValue').placeholder = 'Enter new password';
@@ -158,7 +162,9 @@ function openOtpModal(purpose) {
 }
 
 function closeOtpModal() {
-    document.getElementById('otpModal').style.display = 'none';
+    const modal = document.getElementById('otpModal');
+    modal.style.display = 'none';
+    modal.classList.remove('active');
 }
 
 function requestOtp() {

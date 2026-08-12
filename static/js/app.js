@@ -1,8 +1,11 @@
-// Finance Tracker - Main JavaScript
+// Finance Tracker / FinRoll - Main JavaScript
 
 // Toggle mobile navigation
 function toggleNav() {
-    document.getElementById('navLinks').classList.toggle('active');
+    const navLinks = document.getElementById('navLinks');
+    if (navLinks) {
+        navLinks.classList.toggle('active');
+    }
 }
 
 // Dismiss notification banner
@@ -13,7 +16,10 @@ function dismissNotification() {
         setTimeout(() => banner.remove(), 300);
     }
     // Also clear server-side
-    fetch('/dismiss-notification/', { method: 'POST', headers: {'X-CSRFToken': getCookie('csrftoken')} });
+    const token = getCookie('csrftoken');
+    if (token) {
+        fetch('/dismiss-notification/', { method: 'POST', headers: {'X-CSRFToken': token} }).catch(() => {});
+    }
 }
 
 // Auto-dismiss notifications after 8 seconds
@@ -21,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const banners = document.querySelectorAll('.notification-banner');
     banners.forEach((banner, i) => {
         setTimeout(() => {
-            if (banner.parentElement) {
+            if (banner && banner.parentElement) {
                 banner.style.animation = 'slideUp 0.3s ease forwards';
                 setTimeout(() => banner.remove(), 300);
             }
@@ -29,27 +35,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Close modal on overlay click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', function(e) {
-        if (e.target === this) this.classList.remove('active');
-    });
+// Close modal on overlay click (handles both class-based & inline display-based modals)
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('active');
+        if (e.target.style.display === 'flex' || e.target.style.display === 'block') {
+            e.target.style.display = 'none';
+        }
+    }
 });
 
 // Close modal on Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.classList.remove('active');
+            if (m.style.display === 'flex' || m.style.display === 'block') {
+                m.style.display = 'none';
+            }
+        });
     }
 });
 
 // Get CSRF token from cookies
 function getCookie(name) {
     let value = null;
-    document.cookie.split(';').forEach(c => {
-        c = c.trim();
-        if (c.startsWith(name + '=')) value = c.substring(name.length + 1);
-    });
+    if (document.cookie && document.cookie !== '') {
+        document.cookie.split(';').forEach(c => {
+            c = c.trim();
+            if (c.startsWith(name + '=')) value = c.substring(name.length + 1);
+        });
+    }
     return value;
 }
 
@@ -57,3 +73,4 @@ function getCookie(name) {
 const style = document.createElement('style');
 style.textContent = '@keyframes slideUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }';
 document.head.appendChild(style);
+

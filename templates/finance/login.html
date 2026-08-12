@@ -96,12 +96,12 @@
         </div>
 
         <div id="recStep2" style="display: none;">
-            <div class="alert alert-info" style="margin-bottom: 1rem; font-size: 0.9rem; padding: 0.75rem; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 8px;">
-                📩 6-digit Security OTP has been sent to your email.
+            <div class="alert alert-info" style="margin-bottom: 1.25rem; font-size: 0.95rem; padding: 1rem; border-radius: 10px; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); color: var(--text-heading);">
+                📩 A 6-digit Security OTP code has been sent to your email. Please open your Email Inbox (and Spam folder) to get your code.
             </div>
 
             <div class="form-group" style="margin-bottom: 1.25rem;">
-                <label style="font-weight: 600; color: var(--text-heading);">Enter 6-Digit OTP</label>
+                <label style="font-weight: 600; color: var(--text-heading);">Enter 6-Digit OTP from Email</label>
                 <input type="text" id="recOtpCode" maxlength="6" class="form-input" style="letter-spacing: 0.35rem; font-size: 1.25rem; text-align: center; font-weight: 800;" placeholder="123456" />
             </div>
 
@@ -121,7 +121,9 @@
 
 <script>
 function openLoginRecoveryModal() {
-    document.getElementById('loginRecoveryModal').style.display = 'flex';
+    const modal = document.getElementById('loginRecoveryModal');
+    modal.style.display = 'flex';
+    modal.classList.add('active');
     document.getElementById('recStep1').style.display = 'block';
     document.getElementById('recStep2').style.display = 'none';
     document.getElementById('recSendMsg').innerHTML = '';
@@ -132,7 +134,9 @@ function openLoginRecoveryModal() {
 }
 
 function closeLoginRecoveryModal() {
-    document.getElementById('loginRecoveryModal').style.display = 'none';
+    const modal = document.getElementById('loginRecoveryModal');
+    modal.style.display = 'none';
+    modal.classList.remove('active');
 }
 
 function requestLoginOtp() {

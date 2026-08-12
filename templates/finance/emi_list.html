@@ -12,7 +12,7 @@
             <select name="month" onchange="this.form.submit()" class="form-control"
                 style="padding:6px 12px; border-radius:6px;">
                 {% for m in months %}
-                <option value="{{ m }}" {% if m==selected_month %}selected{% endif %}>{{ m }}</option>
+                <option value="{{ m }}" {% if m == selected_month %}selected{% endif %}>{{ m }}</option>
                 {% endfor %}
             </select>
         </form>
@@ -26,18 +26,15 @@
     <div class="summary-items" style="display:flex; gap:1.5rem;">
         <div class="summary-item">
             <span class="summary-label">Total EMIs</span>
-            <span class="summary-value">₹{{ total|floatformat:2 }} <small class="text-muted">({{ total_count
-                    }})</small></span>
+            <span class="summary-value">₹{{ total|floatformat:2 }} <small class="text-muted">({{ total_count }})</small></span>
         </div>
         <div class="summary-item">
             <span class="summary-label">Paid</span>
-            <span class="summary-value text-success">₹{{ paid_total|floatformat:2 }} <small>({{ paid_count
-                    }})</small></span>
+            <span class="summary-value text-success">₹{{ paid_total|floatformat:2 }} <small>({{ paid_count }})</small></span>
         </div>
         <div class="summary-item">
             <span class="summary-label">Unpaid</span>
-            <span class="summary-value text-danger">₹{{ unpaid_total|floatformat:2 }} <small>({{ unpaid_count
-                    }})</small></span>
+            <span class="summary-value text-danger">₹{{ unpaid_total|floatformat:2 }} <small>({{ unpaid_count }})</small></span>
         </div>
     </div>
 
@@ -77,8 +74,7 @@
         <div class="emi-card-body">
             <div class="emi-detail">
                 <span class="emi-detail-label">Due Date</span>
-                <span class="emi-detail-value">{{ emi.formatted_due_day }} of month <small class="text-muted">(Next: {{
-                        emi.next_due_date|date:"M d" }})</small></span>
+                <span class="emi-detail-value">{{ emi.formatted_due_day }} of month <small class="text-muted">(Next: {{ emi.next_due_date|date:"M d" }})</small></span>
             </div>
             <div class="emi-detail">
                 <span class="emi-detail-label">Monthly EMI</span>
@@ -89,8 +85,7 @@
                 <span class="emi-detail-value text-warning">₹{{ emi.personal_share|floatformat:2 }}</span>
             </div>
             <div class="emi-detail">
-                <span class="emi-detail-label">To Collect{% if emi.split_with %} ({{ emi.split_with }}){% endif
-                    %}</span>
+                <span class="emi-detail-label">To Collect{% if emi.split_with %} ({{ emi.split_with }}){% endif %}</span>
                 <span class="emi-detail-value text-info">₹{{ emi.split_amount|floatformat:2 }}</span>
             </div>
             {% if emi.total_loan_amount %}
@@ -101,16 +96,14 @@
             {% if emi.remaining_balance is not None %}
             <div class="emi-detail">
                 <span class="emi-detail-label">Remaining Balance</span>
-                <span class="emi-detail-value text-danger" style="font-weight:600;">₹{{
-                    emi.remaining_balance|floatformat:2 }}</span>
+                <span class="emi-detail-value text-danger" style="font-weight:600;">₹{{ emi.remaining_balance|floatformat:2 }}</span>
             </div>
             {% endif %}
             {% endif %}
             {% if emi.total_emis %}
             <div class="emi-detail">
                 <span class="emi-detail-label">EMI Progress</span>
-                <span class="emi-detail-value">{{ emi.paid_emis }} / {{ emi.total_emis }} paid ({% if emi.remaining_emis
-                    == 0 %}Completed{% else %}{{ emi.remaining_emis }} remaining{% endif %})</span>
+                <span class="emi-detail-value">{{ emi.paid_emis }} / {{ emi.total_emis }} paid ({% if emi.remaining_emis == 0 %}Completed{% else %}{{ emi.remaining_emis }} remaining{% endif %})</span>
             </div>
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" style="width: {{ emi.progress_percentage }}%;"></div>
@@ -149,8 +142,7 @@
                 + Pay Next Month
             </button>
             {% endif %}
-            <span class="text-muted text-sm" style="display:inline-block; margin-top:4px;">Paid on {{
-                emi.paid_date|date:"M d" }}</span>
+            <span class="text-muted text-sm" style="display:inline-block; margin-top:4px;">Paid on {{ emi.paid_date|date:"M d" }}</span>
             {% endif %}
             <div class="emi-card-links" style="margin-left:auto;">
                 <a href="{% url 'finance:emi_edit' emi.pk %}" class="btn btn-outline btn-xs">Edit</a>
@@ -162,10 +154,9 @@
     <div class="empty-state">
         <span class="empty-icon"
             style="display: flex; justify-content: center; margin-bottom: 0.75rem; color: var(--text-muted);">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
             </svg>
         </span>
         <h3>No EMIs for {{ current_month }}</h3>
@@ -281,6 +272,8 @@
         </form>
     </div>
 </div>
+
+{% endblock %}
 
 {% block extra_js %}
 <script>

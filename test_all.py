@@ -37,6 +37,7 @@ get_pages = [
     ('/export/csv/', 'export csv'),
     ('/export/pdf/', 'export pdf'),
     ('/export/print/', 'export print'),
+    ('/profile/', 'profile page'),
     ('/static/css/style.css', 'style.css static'),
     ('/static/js/app.js', 'app.js static'),
 ]
@@ -115,6 +116,17 @@ print("  [OK] PDF Export returns status 200")
 res_print = client.get('/export/print/')
 assert b'Rem Tenure' in res_print.content, "Print export missing Rem Tenure!"
 print("  [OK] Print Export contains Rem Tenure header")
+
+print("\n=== VERIFYING PROFILE & OTP FLOW ===")
+res_prof = client.post('/profile/', {'email': 'testuser@domain.com', 'first_name': 'Test', 'last_name': 'User'})
+assert res_prof.status_code == 302, "Profile update POST failed!"
+user.refresh_from_db()
+assert user.email == 'testuser@domain.com', "User email was not updated!"
+print("  [OK] Profile Email Saved & User Model Updated")
+
+res_otp = client.post('/profile/send-otp/', data=json.dumps({'purpose': 'username', 'target_value': 'newusername'}), content_type='application/json')
+assert res_otp.status_code == 200 and res_otp.json().get('success'), "OTP Generation failed!"
+print("  [OK] Profile Security OTP Generated & Sent Exclusively via Email")
 
 print("\n=== VERIFYING FINANCIAL HEALTH ASSISTANT API ===")
 res_health = client.post('/assistant/api/', data=json.dumps({'message': 'financial health check'}), content_type='application/json')
